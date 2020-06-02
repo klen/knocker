@@ -3,31 +3,33 @@ import logging
 
 from httpx import HTTPError
 
+from .config import RETRIES_BACKOFF_FACTOR_MAX
 
-logger = logging.getLogger('knocker.request')
+
+logger = logging.getLogger('knocker')
 
 
 async def process(client, config, method, url, **kwargs):
     """Send requests."""
-    retries = config['retries']
-    backof_factor = config['backof_factor']
+    attempts = 0
     error = None
 
     while True:
         try:
+            attempts += 1
             await request(client, method, url, timeout=config['timeout'], **kwargs)
             logger.info('Request processed: %s', url)
 
         except HTTPError as exc:
 
-            if retries:
-                await aio.sleep(backof_factor)
-                retries -= 1
-                backof_factor += backof_factor
+            if config['retries'] > (attempts - 1):
+                await aio.sleep(min(RETRIES_BACKOFF_FACTOR_MAX, (
+                    config['backof_factor'] * (2 ** (attempts - 1))
+                )))
                 continue
 
             error = exc.response and exc.response.status_code or 999
-            logger.info('Request failed [%s]: %s', config['retries'] + 1, url)
+            logger.info('Request failed [%s]: %s', attempts, url)
 
         break
 

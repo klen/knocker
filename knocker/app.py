@@ -5,12 +5,13 @@ import json
 from httpx import AsyncClient
 from marshmallow import ValidationError
 
-from .config import MAX_REDIRECTS, TIMEOUT, STATUS_URL
+from . import config
+
 from .request import process
 from .utils import process_scope, read_body
 
 
-logger = logging.getLogger('knocker.error')
+logger = logging.getLogger('knocker')
 
 
 class App:
@@ -20,7 +21,10 @@ class App:
         self.client = None
 
     async def startup(self, scope):
-        self.client = AsyncClient(timeout=TIMEOUT, max_redirects=MAX_REDIRECTS)
+        self.client = AsyncClient(timeout=config.TIMEOUT, max_redirects=config.MAX_REDIRECTS)
+        logger.info('Knockout started: %r', {
+            name: getattr(config, name) for name in dir(config) if name.upper() == name
+        })
 
     async def shutdown(self, scope):
         await self.client.aclose()
@@ -45,12 +49,12 @@ class App:
 
     async def run(self, scope, receive, send):
         try:
-            assert scope['path'] != STATUS_URL
+            assert scope['path'] != config.STATUS_URL
 
-            method, url, headers, config = process_scope(scope)
-            response = {'status': True, 'config': config}
+            method, url, headers, cfg = process_scope(scope)
+            response = {'status': True, 'config': cfg}
             aio.create_task(process(
-                self.client, config,  method, url, headers=headers, data=await read_body(receive)))
+                self.client, cfg,  method, url, headers=headers, data=await read_body(receive)))
 
         except ValidationError as exc:
             response = {'status': False, 'errors': exc.messages}

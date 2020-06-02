@@ -20,4 +20,5 @@ HEALTHCHECK --interval=1m --timeout=3s \
   CMD curl -f http://localhost:8000/knocker/status || exit 1
 EXPOSE 8000
 WORKDIR /app
-ENTRYPOINT ["uvicorn", "--host=0.0.0.0", "knocker:app"]
+ENTRYPOINT ["/app/devops/docker-entrypoint.sh"]
+CMD ["knocker"]

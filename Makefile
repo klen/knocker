@@ -1,5 +1,8 @@
-VIRTUAL_ENV 	?= env
 NAME 		?= knocker
+VIRTUAL_ENV 	?= env
+DOCKERHUB 	?= horneds
+VERSION ?= $(shell cat $(CURDIR)/.version)
+
 
 all: $(VIRTUAL_ENV)
 
@@ -41,8 +44,16 @@ dev: $(VIRTUAL_ENV)
 test t: $(VIRTUAL_ENV)
 	$(VIRTUAL_ENV)/bin/pytest tests.py
 
+# Docker
+# ------
+
 docker:
-	docker build -t $(NAME):latest $(CURDIR)
+	docker build -f $(CURDIR)/devops/Dockerfile -t $(DOCKERHUB)/$(NAME):$(VERSION) $(CURDIR)
+	docker tag $(DOCKERHUB)/$(NAME):$(VERSION) $(DOCKERHUB)/$(NAME):latest
 
 docker-run: docker
-	docker run -it --rm -p 5000:8000 --name $(NAME) $(NAME):latest
+	docker run -it --rm -p 5000:8000 --name $(NAME) $(DOCKERHUB)/$(NAME):latest
+
+docker-upload:
+	docker push $(DOCKERHUB)/$(NAME):$(VERSION)
+	docker push $(DOCKERHUB)/$(NAME):latest

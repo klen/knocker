@@ -16,6 +16,8 @@ The features:
 - Usable Interface to make HTTP calls
 - Configurable (timeouts, retry-policies)
 
+Public version is available here: https://knock.horneds.com
+
 
 ## Getting started
 

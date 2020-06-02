@@ -1,0 +1,5 @@
+.git
+/.pytest_cache
+/.ropeproject
+/env
+__pycache__

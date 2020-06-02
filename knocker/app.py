@@ -5,7 +5,7 @@ import json
 from httpx import AsyncClient
 from marshmallow import ValidationError
 
-from . import config
+from . import config, __version__
 
 from .request import process
 from .utils import process_scope, read_body
@@ -61,7 +61,8 @@ class App:
 
         except AssertionError:
             response = {
-                'status': True, 'tasks': len(aio.all_tasks()), 'client': id(self.client)
+                'status': True, 'tasks': len(aio.all_tasks()),
+                'version': __version__, 'client': id(self.client),
             }
 
         await send({

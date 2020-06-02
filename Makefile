@@ -61,6 +61,7 @@ docker-upload:
 	    -v $(CURDIR):/data \
 	    -e DOCKERHUB_USERNAME=$(DOCKERHUB_USERNAME) \
 	    -e DOCKERHUB_PASSWORD=$(shell cat $(CURDIR)/.ignore/dockerhub) \
-	    -e DOCKERHUB_REPONAME=$(NAME) \
-	    readme-to-hub
+	    -e DOCKERHUB_REPO_NAME=$(NAME) \
+	    sheogorath/readme-to-dockerhub
+
 

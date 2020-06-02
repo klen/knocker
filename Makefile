@@ -1,7 +1,7 @@
 NAME 		?= knocker
 VIRTUAL_ENV 	?= env
-DOCKERHUB 	?= horneds
-VERSION ?= $(shell cat $(CURDIR)/.version)
+DOCKERHUB_USERNAME?= horneds
+VERSION 	?= $(shell cat $(CURDIR)/.version)
 
 
 all: $(VIRTUAL_ENV)
@@ -48,12 +48,19 @@ test t: $(VIRTUAL_ENV)
 # ------
 
 docker:
-	docker build -f $(CURDIR)/devops/Dockerfile -t $(DOCKERHUB)/$(NAME):$(VERSION) $(CURDIR)
-	docker tag $(DOCKERHUB)/$(NAME):$(VERSION) $(DOCKERHUB)/$(NAME):latest
+	docker build -f $(CURDIR)/devops/Dockerfile -t $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(CURDIR)
+	docker tag $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
 docker-run: docker
-	docker run -it --rm -p 5000:8000 --name $(NAME) $(DOCKERHUB)/$(NAME):latest
+	docker run -it --rm -p 5000:8000 --name $(NAME) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
 docker-upload:
-	docker push $(DOCKERHUB)/$(NAME):$(VERSION)
-	docker push $(DOCKERHUB)/$(NAME):latest
+	docker push $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION)
+	docker push $(DOCKERHUB_USERNAME)/$(NAME):latest
+	docker run --rm \
+	    -v $(CURDIR):/data \
+	    -e DOCKERHUB_USERNAME=$(DOCKERHUB_USERNAME) \
+	    -e DOCKERHUB_PASSWORD=$(shell cat $(CURDIR)/.ignore/dockerhub) \
+	    -e DOCKERHUB_REPONAME=$(NAME) \
+	    readme-to-hub
+

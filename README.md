@@ -3,6 +3,7 @@
 The Knocker Service is a simple ready-to-deploy service to make HTTP calls.
 
 [![tests](https://github.com/klen/knocker/workflows/tests/badge.svg)](https://github.com/klen/knocker/actions)
+[![dockerhub](https://images.microbadger.com/badges/image/horneds/knocker.svg)](https://hub.docker.com/r/horneds/knocker)
 
 Let's imagine that your service is doing HTTP webhook calls when something
 happens. And you need to be sure that the webhooks reach their destination. In

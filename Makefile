@@ -54,7 +54,7 @@ docker:
 docker-run: docker
 	docker run -it --rm -p 5000:8000 --name $(NAME) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
-docker-upload:
+docker-upload: docker
 	docker push $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION)
 	docker push $(DOCKERHUB_USERNAME)/$(NAME):latest
 	docker run --rm \

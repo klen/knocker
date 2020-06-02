@@ -8,5 +8,5 @@ The features:
 - Usable Interface to make HTTP calls
 - Configurable (timeouts, retry-policies)
 
-[![carrier-tests](https://github.com/klen/knocker/workflows/svg)](https://github.com/klen/knocker/actions)
+[![tests](https://github.com/klen/knocker/workflows/tests/badge.svg)](https://github.com/klen/knocker/actions)
 

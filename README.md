@@ -64,7 +64,7 @@ Requests parameters are passed through HTTP headers:
 
 - **KNOCKER-RETRIES**: Number of attempts to make HTTP call if previous one was failed (optional)
 
-- **KNOCKER-BACKOF-FACTOR**: A backoff factor in seconds to apply between attempts after the second try
+- **KNOCKER-BACKOFF-FACTOR**: A backoff factor in seconds to apply between attempts after the second try
 
 
 ## Making a requests

@@ -24,7 +24,7 @@ async def process(client, config, method, url, **kwargs):
 
             if config['retries'] > (attempts - 1):
                 await aio.sleep(min(RETRIES_BACKOFF_FACTOR_MAX, (
-                    config['backof_factor'] * (2 ** (attempts - 1))
+                    config['backoff_factor'] * (2 ** (attempts - 1))
                 )))
                 continue
 

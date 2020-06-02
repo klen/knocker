@@ -69,17 +69,38 @@ Requests parameters are passed through HTTP headers:
 
 ## Making a requests
 
-Let's imagine you have a Knockout Service is running behind the URL: https://knock.myserver.com
+Let's imagine you have a Knockout Service is running behind the URL: https://knock.horneds.com
 
+Request:
 ```http
 POST /webhook/?some-params=12 HTTP/1.1
-Host: knock.myserver.com
+Host: knock.horneds.com
 Content-Type: application/json
 Knocker-Host: target-server.com
 Knocker-Timeout: 15.0
 Knocker-Retries: 5
 
 SOME REQUEST BODY
+```
+
+Response:
+```http
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Type: application/json
+Date: Tue, 02 Jun 2020 15:10:37 GMT
+Transfer-Encoding: chunked
+
+{
+    "config": {
+        "backoff_factor": 0.5,
+        "callback": null,
+        "retries": 5,
+        "timeout": 15.0
+    },
+    "status": true
+}
 ```
 
 Knocker will attempt to make a `POST` request to

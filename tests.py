@@ -65,7 +65,7 @@ def test_process_scope():
     assert url == 'https://google.com/test/me?q=1'
     assert config['timeout'] == 40
     assert config['retries'] == 5
-    assert config['backof_factor'] == 0.5
+    assert config['backoff_factor'] == 0.5
     assert 'callback' in config
 
 
@@ -123,7 +123,7 @@ async def test_knocker(mocked, client, event_loop):
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'google.com',
         'knocker-retries': '1',
-        'knocker-backof_factor': '1',
+        'knocker-backoff-factor': '1',
         'knocker-schema': 'http',
         'knocker-callback': 'https://callback.my',
     })

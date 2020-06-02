@@ -22,10 +22,10 @@ class RequestConfigSchema(ma.Schema):
         data_key='knocker-retries',
     )
 
-    backof_factor = ma.fields.Float(
+    backoff_factor = ma.fields.Float(
         missing=config.RETRIES_BACKOFF_FACTOR,
         validate=ma.validate.Range(0, config.RETRIES_BACKOFF_FACTOR_MAX),
-        data_key='knocker-backof-factor',
+        data_key='knocker-backoff-factor',
     )
 
 

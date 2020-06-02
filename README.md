@@ -21,7 +21,7 @@ The features:
 
 ## Global Configuration
 
-Knocker supports ENVIRONMENT variables:
+Knocker supports the ENVIRONMENT variables:
 
 - **SCHEMA**: Default schema to make HTTP calls (`https`)
 
@@ -42,9 +42,38 @@ Knocker supports ENVIRONMENT variables:
 
 - **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`60`)
 
+## Configuration per a request
+
+Requests parameters are passed through HTTP headers:
+
+- **KNOCKER-HOST**: HTTP Host to make a call (required)
+
+- **KNOCKER-SCHEMA**: HTTP Schema to make a call (optional)
+
+- **KNOCKER-CALLBACK**: An URL to make a callback call if all attemps are failed (optional)
+
+- **KNOCKER-TIMEOUT**: Timeout in seconds (float, optional)
+
+- **KNOCKER-RETRIES**: Number of attempts to make HTTP call if previous one was failed (optional)
+
+- **KNOCKER-BACKOF-FACTOR**: A backoff factor in seconds to apply between attempts after the second try
+
+
 ## Making a requests
 
 Let's imagine you have a Knockout Service is running behind the URL: https://knock.myserver.com
 
 ```http
+POST /webhook/?some-params=12 HTTP/1.1
+Host: knock.myserver.com
+Content-Type: application/json
+Knocker-Host: target-server.com
+Knocker-Timeout: 15.0
+Knocker-Retries: 5
+
+SOME REQUEST BODY
 ```
+
+Knocker will attempt to make a `POST` request to
+`https://target-server.com/webhook/?some-params=12` with the given request's
+body. It will retry the request 5 times after fails (response status 4**, 5**)

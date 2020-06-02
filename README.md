@@ -1,8 +1,13 @@
 # Knocker
 
-The Knocker Service is a ready-to-deploy system to make HTTP calls.
+The Knocker Service is a simple ready-to-deploy service to make HTTP calls.
 
 [![tests](https://github.com/klen/knocker/workflows/tests/badge.svg)](https://github.com/klen/knocker/actions)
+
+Let's imagine that your service is doing HTTP webhook calls when something
+happens. And you need to be sure that the webhooks reach their destination. In
+that case you may setup some kind of queue to retry the requests or use the
+Knocker.
 
 The features:
 
@@ -77,3 +82,24 @@ SOME REQUEST BODY
 Knocker will attempt to make a `POST` request to
 `https://target-server.com/webhook/?some-params=12` with the given request's
 body. It will retry the request 5 times after fails (response status 4**, 5**)
+
+
+## Bug tracker
+
+If you have any suggestions, bug reports or annoyances please report them to
+the issue tracker at https://github.com/klen/knocker/issues
+
+
+## Contributing
+
+Development of The Knocker happens at: https://github.com/klen/knocker
+
+
+## Contributors
+
+* [Kirill Klenov](https://github.com/klen)
+
+
+##  License
+
+Licensed under a MIT license (See [LICENSE](https://github.com/klen/knocker/blob/develop/LICENSE))

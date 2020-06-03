@@ -48,7 +48,7 @@ Knocker supports the ENVIRONMENT variables:
 - **RETRIES_BACKOFF_FACTOR**: A backoff factor in seconds to apply between
   attempts after the second try (`0.5`)
 
-- **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`60`)
+- **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`600`)
 
 ## Configuration per a request
 

@@ -2,7 +2,7 @@ import os
 import json
 
 
-SCHEMA = 'https'
+SCHEME = 'https'
 MAX_REDIRECTS = 10
 STATUS_URL = '/knocker/status'
 

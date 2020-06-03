@@ -31,7 +31,7 @@ Public version is available here: https://knock.horneds.com
 
 Knocker supports the ENVIRONMENT variables:
 
-- **SCHEMA**: Default schema to make HTTP calls (`https`)
+- **SCHEME**: Default scheme to make HTTP calls (`https`)
 
 - **MAX_REDIRECTS**: Max number of allowed redirects per a call (`10`)
 
@@ -56,7 +56,7 @@ Requests parameters are passed through HTTP headers:
 
 - **KNOCKER-HOST**: HTTP Host to make a call (required)
 
-- **KNOCKER-SCHEMA**: HTTP Schema to make a call (optional)
+- **KNOCKER-SCHEME**: HTTP Scheme to make a call (optional)
 
 - **KNOCKER-CALLBACK**: An URL to make a callback call if all attemps are failed (optional)
 

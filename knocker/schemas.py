@@ -6,9 +6,9 @@ from . import config
 class RequestConfigSchema(ma.Schema):
 
     host = ma.fields.String(required=True, data_key='knocker-host')
-    schema = ma.fields.String(missing=config.SCHEMA, validate=ma.validate.OneOf([
+    scheme = ma.fields.String(missing=config.SCHEME, validate=ma.validate.OneOf([
         'https', 'http'
-    ]), data_key='knocker-schema')
+    ]), data_key='knocker-scheme')
 
     callback = ma.fields.URL(allow_none=True, missing=None, data_key='knocker-callback')
 

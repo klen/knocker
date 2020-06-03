@@ -92,7 +92,7 @@ async def test_knocker(mocked, client, event_loop):
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'google.com',
         'knocker-retries': '10',
-        'knocker-schema': 'http',
+        'knocker-scheme': 'http',
         'knocker-timeout': '10',
     })
     assert res.status_code == 200
@@ -112,7 +112,7 @@ async def test_knocker(mocked, client, event_loop):
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'google.com',
         'knocker-retries': '1',
-        'knocker-schema': 'http',
+        'knocker-scheme': 'http',
         'knocker-timeout': '10',
     })
     assert res.status_code == 200
@@ -125,7 +125,7 @@ async def test_knocker(mocked, client, event_loop):
         'knocker-host': 'google.com',
         'knocker-retries': '1',
         'knocker-backoff-factor': '1',
-        'knocker-schema': 'http',
+        'knocker-scheme': 'http',
         'knocker-callback': 'https://callback.my',
     })
     assert res.status_code == 200

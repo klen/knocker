@@ -15,9 +15,9 @@ def process_scope(scope):
     headers.pop('host', None)
     config = request_config_schema.load(config)
     host = config.pop('host')
-    schema = config.pop('schema')
 
-    url = "{schema}://{host}{path}".format(host=host, schema=schema, path=scope['path'])
+    url = "{scheme}://{host}{path}".format(
+        host=host, scheme=config.pop('scheme'), path=scope['path'])
     if scope['query_string']:
         url += '?' + scope['query_string'].decode()
 

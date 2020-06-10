@@ -17,19 +17,22 @@ async def process(client, config, method, url, **kwargs):
     while True:
         try:
             attempts += 1
-            await request(client, method, url, timeout=config['timeout'], **kwargs)
-            logger.info('Request processed: %s', url)
+            res = await request(client, method, url, timeout=config['timeout'], **kwargs)
+            logger.info('Request #%d done (%s): %s', attempts, res.status_code, url)
 
         except HTTPError as exc:
+            error = exc.response and exc.response.status_code or 999
 
             if config['retries'] > (attempts - 1):
-                await aio.sleep(min(RETRIES_BACKOFF_FACTOR_MAX, (
+                retry = min(RETRIES_BACKOFF_FACTOR_MAX, (
                     config['backoff_factor'] * (2 ** (attempts - 1))
-                )))
+                ))
+                logger.warning(
+                    'Request #%d fail (%s), retry in %s: %s', attempts, error, retry, url)
+                await aio.sleep(retry)
                 continue
 
-            error = exc.response and exc.response.status_code or 999
-            logger.info('Request failed [%s]: %s', attempts, url)
+            logger.warning('Request #%d failed (%s): %s', attempts, error, url)
 
         break
 
@@ -47,7 +50,6 @@ async def process(client, config, method, url, **kwargs):
 async def request(client, method, url, **kwargs):
     """Make a request."""
     async with client.stream(method, url, **kwargs) as response:
-        logger.info('Response [%s]: %s', response.status_code, url)
         response.raise_for_status()
 
     return response

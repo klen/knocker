@@ -1,6 +1,7 @@
 import asyncio as aio
 import logging
 import json
+import threading
 
 from httpx import AsyncClient
 from marshmallow import ValidationError
@@ -19,10 +20,11 @@ class App:
     def __init__(self):
         """Initialize the application."""
         self.client = None
+        self.ident = threading.get_ident()
 
     async def startup(self, scope):
         self.client = AsyncClient(timeout=config.TIMEOUT, max_redirects=config.MAX_REDIRECTS)
-        logger.info('Knockout started: %r', {
+        logger.info('Knockout #%d started: %r', self.ident, {
             name: getattr(config, name) for name in dir(config) if name.upper() == name
         })
 
@@ -62,7 +64,7 @@ class App:
         except AssertionError:
             response = {
                 'status': True, 'tasks': len(aio.all_tasks()),
-                'version': __version__, 'client': id(self.client),
+                'version': __version__, 'worker': self.ident,
             }
 
         await send({

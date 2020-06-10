@@ -77,9 +77,9 @@ async def test_knocker(mocked, client, event_loop):
     res = await client.get('/knocker/status')
     assert res.status_code == 200
     json = res.json()
+    assert json['worker']
     assert json['status']
     assert json['tasks']
-    assert json['client']
     assert json['version']
 
     # Invalid request

@@ -12,6 +12,8 @@ class RequestConfigSchema(ma.Schema):
 
     callback = ma.fields.URL(allow_none=True, missing=None, data_key='knocker-callback')
 
+    id = ma.fields.String(data_key='knocker-id')
+
     timeout = ma.fields.Float(
         missing=config.TIMEOUT, validate=ma.validate.Range(0, config.TIMEOUT_MAX),
         data_key='knocker-timeout',

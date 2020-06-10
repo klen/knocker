@@ -14,7 +14,7 @@ async def process(client, config, method, url, **kwargs):
     """Send requests."""
     attempts = 0
     error = None
-    ident = get_id()
+    ident = config.pop('id', None) or get_id()
 
     while True:
         try:
@@ -32,6 +32,7 @@ async def process(client, config, method, url, **kwargs):
                 logger.warning(
                     'Request #%s fail (%d), retry in %ss: "%s" %d',
                     ident, attempts, retry, url, error)
+
                 await aio.sleep(retry)
                 continue
 
@@ -44,8 +45,9 @@ async def process(client, config, method, url, **kwargs):
             client, config, 'GET', config.pop('callback'), json={
                 'config': config,
                 'method': method,
-                'status_code': error,
                 'url': url,
+                'status_code': error,
+                'id': ident,
             }
         ))
 

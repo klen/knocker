@@ -58,13 +58,16 @@ Requests parameters are passed through HTTP headers:
 
 - **KNOCKER-SCHEME**: HTTP Scheme to make a call (optional)
 
-- **KNOCKER-CALLBACK**: An URL to make a callback call if all attemps are failed (optional)
-
 - **KNOCKER-TIMEOUT**: Timeout in seconds (float, optional)
 
 - **KNOCKER-RETRIES**: Number of attempts to make HTTP call if previous one was failed (optional)
 
 - **KNOCKER-BACKOFF-FACTOR**: A backoff factor in seconds to apply between attempts after the second try
+
+- **KNOCKER-CALLBACK**: An URL to make a callback call if all attemps are failed (optional)
+
+- **KNOCKER-ID**: Custom ID for the request (optional, by default Knocker creates one by itself)
+    the id will be returned in callback
 
 
 ## Making a requests

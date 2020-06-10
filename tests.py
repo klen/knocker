@@ -50,6 +50,7 @@ def test_process_scope():
             (b'knocker-host', b'google.com'),
             (b'knocker-timeout', b'40'),
             (b'knocker-retries', b'5'),
+            (b'knocker-id', b'CUSTOM-ID'),
         ],
         'http_version': '1.1',
         'method': 'GET',
@@ -63,9 +64,10 @@ def test_process_scope():
     assert method == 'GET'
     assert len(headers) == 3
     assert url == 'https://google.com/test/me?q=1'
-    assert config['timeout'] == 40
-    assert config['retries'] == 5
     assert config['backoff_factor'] == 0.5
+    assert config['id'] == 'CUSTOM-ID'
+    assert config['retries'] == 5
+    assert config['timeout'] == 40
     assert 'callback' in config
 
 
@@ -115,24 +117,36 @@ async def test_knocker(mocked, client, event_loop):
         'knocker-retries': '1',
         'knocker-scheme': 'http',
         'knocker-timeout': '10',
+        'knocker-id': 'custom-id',
     })
     assert res.status_code == 200
+    json = res.json()
+    assert json
+    assert json['id'] == 'custom-id'
 
     await wait_for_other()
     assert mocked.call_count == 2
 
+    # Test callback
     mocked.reset_mock()
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'google.com',
         'knocker-retries': '1',
-        'knocker-backoff-factor': '1',
+        'knocker-backoff-factor': '.1',
         'knocker-scheme': 'http',
         'knocker-callback': 'https://callback.my',
     })
     assert res.status_code == 200
+    json = res.json()
+    assert json
+    assert json['id'] != 'custom-id'
+
+    rid = json['id']
 
     await wait_for_other()
     assert mocked.call_count == 4
     (_, method, url), kwargs = mocked.call_args
     assert url == 'https://callback.my'
-    assert kwargs['json']['status_code']
+    json = kwargs['json']
+    assert json['status_code']
+    assert json['id'] == rid

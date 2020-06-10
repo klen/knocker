@@ -56,7 +56,7 @@ class App:
             method, url, headers, cfg = process_scope(scope)
             task = aio.create_task(process(
                 self.client, cfg,  method, url, headers=headers, data=await read_body(receive)))
-            response = {'status': True, 'config': cfg, 'id': get_id(task)}
+            response = {'status': True, 'config': cfg, 'id': cfg.get('id') or get_id(task)}
 
         except ValidationError as exc:
             response = {'status': False, 'errors': exc.messages}

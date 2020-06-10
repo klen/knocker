@@ -98,6 +98,7 @@ async def test_knocker(mocked, client, event_loop):
     assert res.status_code == 200
     json = res.json()
     assert json
+    assert json['id']
     assert json['status']
 
     await wait_for_other()

@@ -4,6 +4,7 @@ import logging
 from httpx import HTTPError
 
 from .config import RETRIES_BACKOFF_FACTOR_MAX
+from .utils import get_id
 
 
 logger = logging.getLogger('knocker')
@@ -13,12 +14,13 @@ async def process(client, config, method, url, **kwargs):
     """Send requests."""
     attempts = 0
     error = None
+    ident = get_id()
 
     while True:
         try:
             attempts += 1
             res = await request(client, method, url, timeout=config['timeout'], **kwargs)
-            logger.info('Request #%d done (%s): %s', attempts, res.status_code, url)
+            logger.info('Request #%s done (%d): "%s" %d', ident, attempts, url, res.status_code)
 
         except HTTPError as exc:
             error = exc.response and exc.response.status_code or 999
@@ -28,11 +30,12 @@ async def process(client, config, method, url, **kwargs):
                     config['backoff_factor'] * (2 ** (attempts - 1))
                 ))
                 logger.warning(
-                    'Request #%d fail (%s), retry in %s: %s', attempts, error, retry, url)
+                    'Request #%s fail (%d), retry in %ss: "%s" %d',
+                    ident, attempts, retry, url, error)
                 await aio.sleep(retry)
                 continue
 
-            logger.warning('Request #%d failed (%s): %s', attempts, error, url)
+            logger.warning('Request #%s failed (%d): "%s" %d', ident, attempts, url, error)
 
         break
 

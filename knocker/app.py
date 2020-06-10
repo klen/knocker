@@ -8,7 +8,7 @@ from marshmallow import ValidationError
 from . import config, __version__
 
 from .request import process
-from .utils import process_scope, read_body
+from .utils import process_scope, read_body, get_id
 
 
 logger = logging.getLogger('knocker')
@@ -52,9 +52,9 @@ class App:
             assert scope['path'] != config.STATUS_URL
 
             method, url, headers, cfg = process_scope(scope)
-            response = {'status': True, 'config': cfg}
-            aio.create_task(process(
+            task = aio.create_task(process(
                 self.client, cfg,  method, url, headers=headers, data=await read_body(receive)))
+            response = {'status': True, 'config': cfg, 'id': get_id(task)}
 
         except ValidationError as exc:
             response = {'status': False, 'errors': exc.messages}

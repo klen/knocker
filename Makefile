@@ -48,6 +48,7 @@ test t: $(VIRTUAL_ENV)
 # ------
 
 docker:
+	docker rmi --force `docker images -q '$(DOCKERHUB_USERNAME)/$(NAME)' | uniq` || true
 	docker build -f $(CURDIR)/devops/Dockerfile -t $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(CURDIR)
 	docker tag $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(DOCKERHUB_USERNAME)/$(NAME):latest
 

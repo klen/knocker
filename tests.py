@@ -153,5 +153,5 @@ async def test_knocker(mocked, client, event_loop):
     assert json['status_code']
     assert json['id'] == rid
     assert json['config']
-    assert 'knocker-custom' in json['config']
+    assert 'custom' in json['config']
     assert kwargs['headers'].get('custom-header') == 'custom-value'

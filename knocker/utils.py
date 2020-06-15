@@ -9,7 +9,7 @@ def process_scope(scope):
     """Get an URL and headers from the scope."""
     headers = Headers(scope['headers'])
     config = {
-        name: headers.pop(name)
+        name[8:]: headers.pop(name)
         for name in headers
         if name.startswith('knocker-')
     }

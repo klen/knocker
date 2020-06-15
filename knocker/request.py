@@ -42,7 +42,7 @@ async def process(client, config, method, url, **kwargs):
 
     if error and config.get('callback'):
         aio.create_task(process(
-            client, config, 'GET', config.pop('callback'), json={
+            client, config, 'POST', config.pop('callback'), json={
                 'config': config,
                 'method': method,
                 'url': url,

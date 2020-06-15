@@ -23,16 +23,18 @@ class App:
         self.ident = threading.get_ident()
 
     async def startup(self, scope):
+        """Init HTTP Client."""
         self.client = AsyncClient(timeout=config.TIMEOUT, max_redirects=config.MAX_REDIRECTS)
-        logger.info('Knockout #%d started: %r', self.ident, {
+        logger.info('Knocker #%d started: %r', self.ident, {
             name: getattr(config, name) for name in dir(config) if name.upper() == name
         })
 
     async def shutdown(self, scope):
+        """Close HTTP Client."""
         await self.client.aclose()
 
     async def __call__(self, scope, receive, send):
-        """Init a http client."""
+        """Process ASGI request."""
         if scope['type'] == 'http':
             return await self.run(scope, receive, send)
 
@@ -50,6 +52,7 @@ class App:
         raise ValueError('Unsupported Protocol: {type}'.format(**scope))
 
     async def run(self, scope, receive, send):
+        """Process HTTP request."""
         try:
             assert scope['path'] != config.STATUS_URL
 

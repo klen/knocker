@@ -31,4 +31,4 @@ class RequestConfigSchema(ma.Schema):
     )
 
 
-request_config_schema = RequestConfigSchema(unknown=ma.EXCLUDE)
+request_config_schema = RequestConfigSchema(unknown=ma.INCLUDE)

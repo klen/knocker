@@ -135,6 +135,7 @@ async def test_knocker(mocked, client, event_loop):
         'knocker-backoff-factor': '.1',
         'knocker-scheme': 'http',
         'knocker-callback': 'https://callback.my',
+        'knocker-custom': 'custom-knocker-header',
         'custom-header': 'custom-value',
     })
     assert res.status_code == 200
@@ -151,4 +152,6 @@ async def test_knocker(mocked, client, event_loop):
     json = kwargs['json']
     assert json['status_code']
     assert json['id'] == rid
+    assert json['config']
+    assert 'knocker-custom' in json['config']
     assert kwargs['headers'].get('custom-header') == 'custom-value'

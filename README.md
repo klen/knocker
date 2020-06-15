@@ -70,6 +70,10 @@ Requests parameters are passed through HTTP headers:
     the id will be returned in callback
 
 
+All other headers which begin from `knocker-` prefix won't be sent to a target
+host but will be sent to a callback.
+
+
 ## Making a requests
 
 Let's imagine you have a Knockout Service is running behind the URL: https://knock.horneds.com

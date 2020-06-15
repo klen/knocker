@@ -52,7 +52,7 @@ docker:
 	docker build -f $(CURDIR)/devops/Dockerfile -t $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(CURDIR)
 	docker tag $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
-docker-run: docker
+docker-run run: docker
 	docker run -it --rm -p 5000:8000 --name $(NAME) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
 docker-upload: docker

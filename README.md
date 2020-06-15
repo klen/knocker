@@ -83,7 +83,7 @@ Knocker-Host: target-server.com
 Knocker-Timeout: 15.0
 Knocker-Retries: 5
 
-SOME REQUEST BODY
+"SOME REQUEST BODY"
 ```
 
 Response:

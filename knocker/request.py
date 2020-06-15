@@ -48,7 +48,7 @@ async def process(client, config, method, url, **kwargs):
                 'url': url,
                 'status_code': error,
                 'id': ident,
-            }
+            }, headers=kwargs.get('headers')
         ))
 
 

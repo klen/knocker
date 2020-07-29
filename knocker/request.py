@@ -4,7 +4,7 @@ import http
 
 from httpx import HTTPError
 
-from .config import RETRIES_BACKOFF_FACTOR_MAX
+from . import config as global_config
 from .utils import get_id
 
 
@@ -29,7 +29,7 @@ async def process(client, config, method, url, **kwargs):
             error = exc.response and exc.response.status_code or 999
 
             if config['retries'] > (attempts - 1):
-                retry = min(RETRIES_BACKOFF_FACTOR_MAX, (
+                retry = min(global_config.RETRIES_BACKOFF_FACTOR_MAX, (
                     config['backoff_factor'] * (2 ** (attempts - 1))
                 ))
                 logger.warning(

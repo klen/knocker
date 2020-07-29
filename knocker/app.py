@@ -6,7 +6,7 @@ import threading
 from httpx import AsyncClient
 from marshmallow import ValidationError
 
-from . import config, __version__
+from . import __version__, config
 
 from .request import process
 from .utils import process_scope, read_body, get_id
@@ -25,9 +25,7 @@ class App:
     async def startup(self, scope):
         """Init HTTP Client."""
         self.client = AsyncClient(timeout=config.TIMEOUT, max_redirects=config.MAX_REDIRECTS)
-        logger.info('Knocker #%d started: %r', self.ident, {
-            name: getattr(config, name) for name in dir(config) if name.upper() == name
-        })
+        logger.info('Knocker #%d started: %r', self.ident, vars(config))
 
     async def shutdown(self, scope):
         """Close HTTP Client."""

@@ -7,8 +7,8 @@ The Knocker Service is a simple ready-to-deploy service to make HTTP calls.
 
 Let's imagine that your service is doing HTTP webhook calls when something
 happens. And you need to be sure that the webhooks reach their destination. In
-that case you may setup some kind of queue to retry the requests or use the
-Knocker.
+that case you may setup some kind of queue to retry the failed requests or
+allow Knocker do everything for you.
 
 The features:
 
@@ -29,11 +29,12 @@ Public version is available here: https://knock.horneds.com
 
 ## Making a requests
 
-Basically, all you need to make requests with Knocker is to change URL host to
-your knocker and put an original into `Knocker-Host` header.
+Basically, all you need to make requests with Knocker is to change URL HOST to
+your Knocker Instance and put the original one into `Knocker-Host` header.
 
 Let's imagine you have a Knockout Service is running behind the URL:
-https://knock.horneds.com
+https://knock.horneds.com and you want to make a request to
+https://target-server.com/webhook/?some-params=12
 
 Request:
 ```http

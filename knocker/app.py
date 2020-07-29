@@ -62,7 +62,7 @@ class App:
             response = {'status': True, 'config': cfg, 'id': cfg.get('id') or get_id(task)}
 
         except ValidationError as exc:
-            response = {'status': False, 'errors': exc.messages}
+            response = {'status': False, 'errors': {'headers': exc.messages}}
 
         except AssertionError:
             response = {

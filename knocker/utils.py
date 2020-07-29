@@ -9,12 +9,17 @@ def process_scope(scope):
     """Get an URL and headers from the scope."""
     headers = Headers(scope['headers'])
     config = {
-        name[8:]: headers.pop(name)
+        name: headers.pop(name)
         for name in headers
         if name.startswith('knocker-')
     }
 
+    # Clean Knocker HOST from headers
     headers.pop('host', None)
+
+    # Clean Content-Length from headers
+    headers.pop('content-length', None)
+
     config = request_config_schema.load(config)
     host = config.pop('host')
 

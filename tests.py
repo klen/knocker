@@ -47,10 +47,12 @@ def test_process_scope():
             (b'accept', b'*/*'),
             (b'accept-encoding', b'gzip, deflate'),
             (b'connection', b'keep-alive'),
+            (b'content-length', b'0'),
             (b'knocker-host', b'google.com'),
             (b'knocker-timeout', b'40'),
             (b'knocker-retries', b'5'),
             (b'knocker-id', b'CUSTOM-ID'),
+            (b'knocker-backoff-factor', b'10'),
         ],
         'http_version': '1.1',
         'method': 'GET',
@@ -64,7 +66,7 @@ def test_process_scope():
     assert method == 'GET'
     assert len(headers) == 3
     assert url == 'https://google.com/test/me?q=1'
-    assert config['backoff_factor'] == 0.5
+    assert config['backoff_factor'] == 10.0
     assert config['id'] == 'CUSTOM-ID'
     assert config['retries'] == 5
     assert config['timeout'] == 40
@@ -153,5 +155,5 @@ async def test_knocker(mocked, client, event_loop):
     assert json['status_code']
     assert json['id'] == rid
     assert json['config']
-    assert 'custom' in json['config']
+    assert 'knocker-custom' in json['config']
     assert kwargs['headers'].get('custom-header') == 'custom-value'

@@ -1,5 +1,6 @@
 import asyncio as aio
 import logging
+import http
 
 from httpx import HTTPError
 
@@ -20,7 +21,9 @@ async def process(client, config, method, url, **kwargs):
         try:
             attempts += 1
             res = await request(client, method, url, timeout=config['timeout'], **kwargs)
-            logger.info('Request #%s done (%d): "%s" %d', ident, attempts, url, res.status_code)
+            logger.info(
+                'Request #%s done (%d): "%s" %d %s',
+                ident, attempts, url, res.status_code, http.HTTPStatus(res.status_code).phrase)
 
         except HTTPError as exc:
             error = exc.response and exc.response.status_code or 999
@@ -37,6 +40,12 @@ async def process(client, config, method, url, **kwargs):
                 continue
 
             logger.warning('Request #%s failed (%d): "%s" %d', ident, attempts, url, error)
+
+        # An unhandled exception
+        except Exception as exc:
+            logger.error(
+                'Request #%s raises an exception (%d): "%s"', ident, attempts, url)
+            logger.exception(exc)
 
         break
 

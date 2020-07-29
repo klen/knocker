@@ -23,9 +23,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: env
-        key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-venv-
+        key: ${{ runner.os }}-env-${{ hashFiles('requirements.txt') }}
 
     - name: Setup requirements
       run: |

@@ -1,4 +1,4 @@
-# Knocker 0.11.1
+# Knocker 0.11.2
 
 The Knocker Service is a simple ready-to-deploy service to make HTTP calls.
 

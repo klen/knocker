@@ -21,7 +21,7 @@ config = Config(
 
     LOG_FILE='-',
     LOG_LEVEL='INFO',
-    LOG_FORMAT='%(asctime)s %(levelname)-8s %(message)s',
+    LOG_FORMAT='[%(asctime)s] %(process)s %(levelname)-8s %(message)s',
 
 )
 

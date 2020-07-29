@@ -4,14 +4,12 @@ import http
 from httpx import HTTPError
 
 from . import config as global_config, logger
-from .utils import get_id
 
 
 async def process(client, config, method, url, **kwargs):
     """Send requests."""
     attempts = 0
     error = None
-    ident = config.pop('id', None) or get_id()
 
     while True:
         try:
@@ -19,7 +17,7 @@ async def process(client, config, method, url, **kwargs):
             res = await request(client, method, url, timeout=config['timeout'], **kwargs)
             logger.info(
                 'Request #%s done (%d): "%s %s" %d %s',
-                ident, attempts, method, url, res.status_code,
+                config['id'], attempts, method, url, res.status_code,
                 http.HTTPStatus(res.status_code).phrase)
 
         except HTTPError as exc:
@@ -31,18 +29,19 @@ async def process(client, config, method, url, **kwargs):
                 ))
                 logger.warning(
                     'Request #%s fail (%d), retry in %ss: "%s %s" %d',
-                    ident, attempts, retry, method, url, error)
+                    config['id'], attempts, retry, method, url, error)
 
                 await aio.sleep(retry)
                 continue
 
             logger.warning(
-                'Request #%s failed (%d): "%s %s" %d', ident, attempts, method, url, error)
+                'Request #%s failed (%d): "%s %s" %d', config['id'], attempts, method, url, error)
 
         # An unhandled exception
         except Exception as exc:
             logger.error(
-                'Request #%s raises an exception (%d): "%s %s"', ident, attempts, method, url)
+                'Request #%s raises an exception (%d): "%s %s"',
+                config['id'], attempts, method, url)
             logger.exception(exc)
 
         break
@@ -54,7 +53,6 @@ async def process(client, config, method, url, **kwargs):
                 'method': method,
                 'url': url,
                 'status_code': error,
-                'id': ident,
             }, headers=kwargs.get('headers')
         ))
 

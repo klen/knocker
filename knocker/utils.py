@@ -1,5 +1,3 @@
-import asyncio as aio
-import threading
 from httpx import Headers
 
 from .schemas import request_config_schema
@@ -39,13 +37,3 @@ async def read_body(receive):
         message = await receive()
         body += message.get('body', b'')
     return body
-
-
-def get_id(task=None):
-    """Get a unique ID for the given task."""
-    ident = threading.get_ident()
-    task = task or aio.current_task()
-    if task:
-        ident = "%s/%d" % (ident, id(task))
-
-    return ident

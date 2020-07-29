@@ -1,6 +1,6 @@
 import asyncio as aio
+import os
 import json
-import threading
 
 from httpx import AsyncClient
 from marshmallow import ValidationError
@@ -8,7 +8,7 @@ from marshmallow import ValidationError
 from . import __version__, config, logger
 
 from .request import process
-from .utils import process_scope, read_body, get_id
+from .utils import process_scope, read_body
 
 
 class App:
@@ -16,7 +16,7 @@ class App:
     def __init__(self):
         """Initialize the application."""
         self.client = None
-        self.ident = threading.get_ident()
+        self.ident = os.getpid()
 
     async def startup(self, scope):
         """Init HTTP Client."""
@@ -51,9 +51,9 @@ class App:
             assert scope['path'] != config.STATUS_URL
 
             method, url, headers, cfg = process_scope(scope)
-            task = aio.create_task(process(
+            aio.create_task(process(
                 self.client, cfg,  method, url, headers=headers, data=await read_body(receive)))
-            response = {'status': True, 'config': cfg, 'id': cfg.get('id') or get_id(task)}
+            response = {'status': True, 'config': cfg}
 
         except ValidationError as exc:
             response = {'status': False, 'errors': {'headers': exc.messages}}

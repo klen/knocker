@@ -62,9 +62,9 @@ Transfer-Encoding: chunked
         "backoff_factor": 0.5,
         "callback": null,
         "retries": 5,
-        "timeout": 15.0
+        "timeout": 15.0,
+        "id": "4498279872/4494502784",
     },
-    "id": "4498279872/4494502784",
     "status": true
 }
 ```
@@ -120,7 +120,6 @@ Requests parameters are passed through HTTP headers:
 - **KNOCKER-CALLBACK**: An URL to make a callback call if all attemps are failed (optional)
 
 - **KNOCKER-ID**: Custom ID for the request (optional, by default Knocker creates one by itself)
-    the id will be returned in callback
 
 
 All other headers which begin from `knocker-` prefix won't be sent to a target
@@ -140,12 +139,12 @@ Content-Type: application/json
 
 {
     "config": {
+        "id": "ID", // Request ID
         // ... Request Config
     },
     "method": "GET", // Request Method
     "url": "https://target-server.com/webhook/?some-params=12 HTTP/1.1", // The URL is failed
     "status_code": 403, // Latest failed status code
-    "id": "ID", // Request ID
 }
 ```
 

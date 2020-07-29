@@ -4,7 +4,7 @@ import os
 import pytest
 import unittest.mock as mock
 
-from httpx import AsyncClient, HTTPError
+from httpx import AsyncClient, HTTPError, Response, Request
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -99,6 +99,8 @@ async def test_knocker(mocked, client, event_loop):
     assert json
     assert not json['status']
 
+    mocked.return_value = Response(200, request=Request('GET', 'https://test.com'))
+
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'google.com',
         'knocker-retries': '10',
@@ -108,7 +110,8 @@ async def test_knocker(mocked, client, event_loop):
     assert res.status_code == 200
     json = res.json()
     assert json
-    assert json['id']
+    assert json['config']
+    assert json['config']['id']
     assert json['status']
 
     await wait_for_other()
@@ -130,7 +133,7 @@ async def test_knocker(mocked, client, event_loop):
     assert res.status_code == 200
     json = res.json()
     assert json
-    assert json['id'] == 'custom-id'
+    assert json['config']['id'] == 'custom-id'
 
     await wait_for_other()
     assert mocked.call_count == 2
@@ -149,9 +152,9 @@ async def test_knocker(mocked, client, event_loop):
     assert res.status_code == 200
     json = res.json()
     assert json
-    assert json['id'] != 'custom-id'
+    assert json['config']['id'] != 'custom-id'
 
-    rid = json['id']
+    rid = json['config']['id']
 
     await wait_for_other()
     assert mocked.call_count == 4
@@ -159,7 +162,7 @@ async def test_knocker(mocked, client, event_loop):
     assert url == 'https://callback.my'
     json = kwargs['json']
     assert json['status_code']
-    assert json['id'] == rid
     assert json['config']
+    assert json['config']['id'] == rid
     assert 'knocker-custom' in json['config']
     assert kwargs['headers'].get('custom-header') == 'custom-value'

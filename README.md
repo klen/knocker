@@ -97,6 +97,12 @@ Knocker supports the ENVIRONMENT variables:
 
 - **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`600`)
 
+- **LOG_FILE**: `-`
+
+- **LOG_LEVEL**: `INFO`
+
+- **LOG_FORMAT**: `%(asctime)s %(levelname)-8s %(message)s`
+
 ## Configuration per a request
 
 Requests parameters are passed through HTTP headers:

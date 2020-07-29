@@ -1,3 +1,4 @@
+gunicorn        == 20.0.4
 uvicorn         == 0.11.7
 httpx           == 0.12.1
 # HTTPX>0.13/Asyncio has a 'stream.close' warning

@@ -5,7 +5,7 @@ env
 
 if [ "$1" = 'knocker' ]; then
     echo -e "\nDocker: Start Knocker"
-    exec uvicorn --host=0.0.0.0 knocker:app
+    exec gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --access-logfile - knocker:app
 fi
 
 echo ""

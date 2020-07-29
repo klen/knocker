@@ -1,8 +1,11 @@
+import logging
+
 from modconfig import Config
 
 
 __version__ = "0.11.1"
 
+logger = logging.getLogger('uvicorn.knocker')
 
 config = Config(
 

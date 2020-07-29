@@ -1,14 +1,10 @@
 import asyncio as aio
-import logging
 import http
 
 from httpx import HTTPError
 
-from . import config as global_config
+from . import config as global_config, logger
 from .utils import get_id
-
-
-logger = logging.getLogger('knocker')
 
 
 async def process(client, config, method, url, **kwargs):
@@ -22,8 +18,9 @@ async def process(client, config, method, url, **kwargs):
             attempts += 1
             res = await request(client, method, url, timeout=config['timeout'], **kwargs)
             logger.info(
-                'Request #%s done (%d): "%s" %d %s',
-                ident, attempts, url, res.status_code, http.HTTPStatus(res.status_code).phrase)
+                'Request #%s done (%d): "%s %s" %d %s',
+                ident, attempts, method, url, res.status_code,
+                http.HTTPStatus(res.status_code).phrase)
 
         except HTTPError as exc:
             error = exc.response and exc.response.status_code or 999
@@ -33,18 +30,19 @@ async def process(client, config, method, url, **kwargs):
                     config['backoff_factor'] * (2 ** (attempts - 1))
                 ))
                 logger.warning(
-                    'Request #%s fail (%d), retry in %ss: "%s" %d',
-                    ident, attempts, retry, url, error)
+                    'Request #%s fail (%d), retry in %ss: "%s %s" %d',
+                    ident, attempts, retry, method, url, error)
 
                 await aio.sleep(retry)
                 continue
 
-            logger.warning('Request #%s failed (%d): "%s" %d', ident, attempts, url, error)
+            logger.warning(
+                'Request #%s failed (%d): "%s %s" %d', ident, attempts, method, url, error)
 
         # An unhandled exception
         except Exception as exc:
             logger.error(
-                'Request #%s raises an exception (%d): "%s"', ident, attempts, url)
+                'Request #%s raises an exception (%d): "%s %s"', ident, attempts, method, url)
             logger.exception(exc)
 
         break

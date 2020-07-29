@@ -1,18 +1,14 @@
 import asyncio as aio
-import logging
 import json
 import threading
 
 from httpx import AsyncClient
 from marshmallow import ValidationError
 
-from . import __version__, config
+from . import __version__, config, logger
 
 from .request import process
 from .utils import process_scope, read_body, get_id
-
-
-logger = logging.getLogger('knocker')
 
 
 class App:

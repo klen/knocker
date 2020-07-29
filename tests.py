@@ -11,6 +11,12 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture(scope='module')
+def event_loop():
+    """Bind Event Loop to module scope."""
+    return aio.get_event_loop()
+
+
+@pytest.fixture(scope='module')
 async def client():
     """Generate the test client."""
     os.environ['TIMEOUT'] = '15.0'

@@ -1,7 +1,9 @@
-uvicorn         == 0.11.5
+uvicorn         == 0.11.7
 httpx           == 0.12.1
-marshmallow     == 3.6.0
+# HTTPX>0.13/Asyncio has a 'stream.close' warning
+# httpx           == 0.13.3
+marshmallow     == 3.7.1
 
-pytest          == 5.4.2
-pytest-asyncio  == 0.12.0
+pytest          == 6.0.0
+pytest-asyncio  == 0.14.0
 modconfig       == 0.2.1

@@ -1,8 +1,12 @@
 import uuid
+import re
 
 import marshmallow as ma
 
 from . import config
+
+
+SCHEMA = re.compile('^https?://')
 
 
 class RequestConfigSchema(ma.Schema):
@@ -31,6 +35,11 @@ class RequestConfigSchema(ma.Schema):
         validate=ma.validate.Range(0, config.RETRIES_BACKOFF_FACTOR_MAX),
         data_key='knocker-backoff-factor'
     )
+
+    @ma.post_load
+    def fix_host(self, data, **kwargs):
+        data['host'] = SCHEMA.sub('', data['host'])
+        return data
 
 
 request_config_schema = RequestConfigSchema(unknown=ma.INCLUDE)

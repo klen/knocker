@@ -10,11 +10,13 @@ async def process(client, config, method, url, **kwargs):
     """Send requests."""
     attempts = 0
     error = None
+    kwargs['timeout'] = config['timeout']
 
     while True:
         try:
             attempts += 1
-            res = await request(client, method, url, timeout=config['timeout'], **kwargs)
+            res = await request(client, method, url, **kwargs)
+            res.raise_for_status()
             logger.info(
                 'Request #%s done (%d): "%s %s" %d %s',
                 config['id'], attempts, method, url, res.status_code,
@@ -59,7 +61,8 @@ async def process(client, config, method, url, **kwargs):
 
 async def request(client, method, url, **kwargs):
     """Make a request."""
-    async with client.stream(method, url, **kwargs) as response:
-        response.raise_for_status()
 
-    return response
+    # We don't need to read response body here, but httpx>0.13 warns unclosed stream
+    #  async with client.stream(method, url, **kwargs) as response:
+    #      return response
+    return await client.request(method, url, **kwargs)

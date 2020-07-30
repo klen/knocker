@@ -54,7 +54,7 @@ def test_process_scope():
             (b'accept-encoding', b'gzip, deflate'),
             (b'connection', b'keep-alive'),
             (b'content-length', b'0'),
-            (b'knocker-host', b'google.com'),
+            (b'knocker-host', b'https://google.com'),
             (b'knocker-timeout', b'40'),
             (b'knocker-retries', b'5'),
             (b'knocker-id', b'CUSTOM-ID'),

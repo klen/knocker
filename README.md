@@ -21,6 +21,8 @@ Public version is available here: https://knock.horneds.com
 
 ## Getting started
 
+There is a docker container with the Knocker available. Run it with the command:
+
 ```shell
 
     docker run -p 0.0.0.0:8000:8000 --name knocker horneds/knocker knocker
@@ -74,35 +76,6 @@ Knocker will attempt to make a `POST` request to
 body. It will retry the request 5 times after fails (response status 4**, 5**)
 
 
-## Global Configuration
-
-Knocker supports the ENVIRONMENT variables:
-
-- **SCHEME**: Default scheme to make HTTP calls (`https`)
-
-- **MAX_REDIRECTS**: Max number of allowed redirects per a call (`10`)
-
-- **STATUS_URL**: A path to return Knocker Status (`/knocker/status`)
-
-- **TIMEOUT**: Default timeout in seconds (`10.0`)
-
-- **TIMEOUT_MAX**: Maximum allowed timeout in seconds (`60.0`)
-
-- **RETRIES**: Default number of attempts to make HTTP call (`2`)
-
-- **RETRIES_MAX**: Maximum allowed number of retries (`10`)
-
-- **RETRIES_BACKOFF_FACTOR**: A backoff factor in seconds to apply between
-  attempts after the second try (`0.5`)
-
-- **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`600`)
-
-- **LOG_FILE**: `-`
-
-- **LOG_LEVEL**: `INFO`
-
-- **LOG_FORMAT**: `%(asctime)s %(levelname)-8s %(message)s`
-
 ## Configuration per a request
 
 Requests parameters are passed through HTTP headers:
@@ -147,6 +120,37 @@ Content-Type: application/json
     "status_code": 403, // Latest failed status code
 }
 ```
+
+
+## Global Configuration
+
+Knocker Service setups with the ENVIRONMENT variables:
+
+- **SCHEME**: Default scheme to make HTTP calls (`https`)
+
+- **MAX_REDIRECTS**: Max number of allowed redirects per a call (`10`)
+
+- **STATUS_URL**: A path to return Knocker Status (`/knocker/status`)
+
+- **TIMEOUT**: Default timeout in seconds (`10.0`)
+
+- **TIMEOUT_MAX**: Maximum allowed timeout in seconds (`60.0`)
+
+- **RETRIES**: Default number of attempts to make HTTP call (`2`)
+
+- **RETRIES_MAX**: Maximum allowed number of retries (`10`)
+
+- **RETRIES_BACKOFF_FACTOR**: A backoff factor in seconds to apply between
+  attempts after the second try (`0.5`)
+
+- **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`600`)
+
+- **LOG_FILE**: `-`
+
+- **LOG_LEVEL**: `INFO`
+
+- **LOG_FORMAT**: `%(asctime)s %(levelname)-8s %(message)s`
+
 
 ## Bug tracker
 

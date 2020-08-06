@@ -21,13 +21,16 @@ Public version is available here: https://knock.horneds.com
 
 ## Getting started
 
-There is a docker container with the Knocker available. Run it with the command:
+There is a docker container `horneds/knocker` available.
+Example run (locally):
 
 ```shell
 
-    docker run -p 0.0.0.0:8000:8000 --name knocker horneds/knocker knocker
+    docker run --rm -p 0.0.0.0:8000:8000 horneds/knocker
 
 ```
+
+Service will be available http://localhost:8000
 
 ## Making a requests
 

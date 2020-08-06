@@ -135,6 +135,8 @@ Knocker Service setups with the ENVIRONMENT variables:
 
 - **STATUS_URL**: A path to return Knocker Status (`/knocker/status`)
 
+- **HOSTS_ONLY**: A list with hosts names, if defined only the hosts would be allowed ([])
+
 - **TIMEOUT**: Default timeout in seconds (`10.0`)
 
 - **TIMEOUT_MAX**: Maximum allowed timeout in seconds (`60.0`)

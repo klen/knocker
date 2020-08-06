@@ -39,6 +39,9 @@ class RequestConfigSchema(ma.Schema):
     @ma.post_load
     def fix_host(self, data, **kwargs):
         data['host'] = SCHEMA.sub('', data['host'])
+        if config.HOSTS_ONLY and data['host'] not in config.HOSTS_ONLY:
+            raise ma.ValidationError('Host is not allowed', field_name='knocker-host')
+
         return data
 
 

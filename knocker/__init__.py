@@ -10,6 +10,7 @@ config = Config(
     SCHEME='https',
     MAX_REDIRECTS=10,
     STATUS_URL='/knocker/status',
+    HOSTS_ONLY=[],
 
     TIMEOUT=10.0,
     TIMEOUT_MAX=60.0,

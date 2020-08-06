@@ -3,7 +3,7 @@ import http
 
 from httpx import HTTPError
 
-from . import config as global_config, logger
+from . import config as global_config, logger, __version__
 
 
 async def process(client, config, method, url, **kwargs):
@@ -11,6 +11,8 @@ async def process(client, config, method, url, **kwargs):
     attempts = 0
     error = None
     kwargs['timeout'] = config['timeout']
+    kwargs['headers'] = kwargs.get('headers') or {}
+    kwargs['headers']['x-knocker'] = __version__
 
     while True:
         try:

@@ -30,7 +30,18 @@ class App:
     async def __call__(self, scope, receive, send):
         """Process ASGI request."""
         if scope['type'] == 'http':
-            return await self.run(scope, receive, send)
+            status, response = await self.run(scope, receive, send)
+            await send({
+                'status': status,
+                'type': 'http.response.start',
+                'headers': [
+                    [b'content-type', b'application/json']
+                ]
+            })
+            return await send({
+                'type': 'http.response.body',
+                'body': json.dumps(dict(response, status=bool(status < 400))).encode(),
+            })
 
         if scope['type'] == 'lifespan':
             while True:
@@ -47,31 +58,19 @@ class App:
 
     async def run(self, scope, receive, send):
         """Process HTTP request."""
+
+        if scope['path'] == config.STATUS_URL:
+            return 200, dict(tasks=len(aio.all_tasks()), version=__version__, worker=self.ident)
+
         try:
-            assert scope['path'] != config.STATUS_URL
-
             method, url, headers, cfg = process_scope(scope)
-            aio.create_task(process(
-                self.client, cfg,  method, url, headers=headers, data=await read_body(receive)))
-            response = {'status': True, 'config': cfg}
-
         except ValidationError as exc:
-            response = {'status': False, 'errors': {'headers': exc.messages}}
+            return 400, {'errors': {'headers': exc.messages}}
 
-        except AssertionError:
-            response = {
-                'status': True, 'tasks': len(aio.all_tasks()),
-                'version': __version__, 'worker': self.ident,
-            }
+        if headers.get('x-knocker'):
+            return 406, {'errors': {'system': 'ignore requests from knocker'}}
 
-        await send({
-            'type': 'http.response.start',
-            'status': response['status'] and 200 or 400,
-            'headers': [
-                [b'content-type', b'application/json']
-            ]
-        })
-        await send({
-            'type': 'http.response.body',
-            'body': json.dumps(response).encode(),
-        })
+        aio.create_task(process(
+            self.client, cfg, method, url, headers=headers, data=await read_body(receive)))
+
+        return 200, {'config': cfg}

@@ -20,6 +20,7 @@ def event_loop():
 async def client():
     """Generate the test client."""
     os.environ['TIMEOUT'] = '15.0'
+    os.environ['HOSTS_ONLY'] = '["test.com","test2.com"]'
 
     from knocker import app
 
@@ -39,6 +40,7 @@ def test_config(client):
     from knocker import config
 
     assert config.TIMEOUT == 15.0
+    assert config.HOSTS_ONLY == ['test.com', 'test2.com']
 
 
 def test_process_scope():
@@ -54,7 +56,7 @@ def test_process_scope():
             (b'accept-encoding', b'gzip, deflate'),
             (b'connection', b'keep-alive'),
             (b'content-length', b'0'),
-            (b'knocker-host', b'https://google.com'),
+            (b'knocker-host', b'https://test.com'),
             (b'knocker-timeout', b'40'),
             (b'knocker-retries', b'5'),
             (b'knocker-id', b'CUSTOM-ID'),
@@ -71,7 +73,7 @@ def test_process_scope():
 
     assert method == 'GET'
     assert len(headers) == 3
-    assert url == 'https://google.com/test/me?q=1'
+    assert url == 'https://test.com/test/me?q=1'
     assert config['backoff_factor'] == 10.0
     assert config['id'] == 'CUSTOM-ID'
     assert config['retries'] == 5
@@ -92,17 +94,26 @@ async def test_knocker(mocked, client, event_loop):
     assert json['tasks']
     assert json['version']
 
-    # Invalid request
+    # Invalid requests
     res = await client.get('/')
     assert res.status_code == 400
     json = res.json()
     assert json
     assert not json['status']
 
-    mocked.return_value = Response(200, request=Request('GET', 'https://test.com'))
-
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'google.com',
+        'knocker-retries': '10',
+        'knocker-scheme': 'http',
+        'knocker-timeout': '10',
+    })
+    assert res.status_code == 400
+    json = res.json()
+    assert json
+
+    mocked.return_value = Response(200, request=Request('GET', 'https://test.com'))
+    res = await client.post('/test/me?q=1', headers={
+        'knocker-host': 'test.com',
         'knocker-retries': '10',
         'knocker-scheme': 'http',
         'knocker-timeout': '10',
@@ -118,13 +129,14 @@ async def test_knocker(mocked, client, event_loop):
     assert mocked.call_count == 1
     (_, method, url), kwargs = mocked.call_args
     assert method == 'POST'
-    assert url == 'http://google.com/test/me?q=1'
+    assert url == 'http://test.com/test/me?q=1'
     assert kwargs['headers']
+    assert kwargs['headers']['x-knocker']
 
     mocked.reset_mock()
     mocked.side_effect = HTTPError(response=res)
     res = await client.post('/test/me?q=1', headers={
-        'knocker-host': 'google.com',
+        'knocker-host': 'test.com',
         'knocker-retries': '1',
         'knocker-scheme': 'http',
         'knocker-timeout': '10',
@@ -141,7 +153,7 @@ async def test_knocker(mocked, client, event_loop):
     # Test callback
     mocked.reset_mock()
     res = await client.post('/test/me?q=1', headers={
-        'knocker-host': 'google.com',
+        'knocker-host': 'test.com',
         'knocker-retries': '1',
         'knocker-backoff-factor': '.1',
         'knocker-scheme': 'http',
@@ -166,3 +178,12 @@ async def test_knocker(mocked, client, event_loop):
     assert json['config']['id'] == rid
     assert 'knocker-custom' in json['config']
     assert kwargs['headers'].get('custom-header') == 'custom-value'
+
+    # Ignore requests from Knocker itself (see for X-Knocker header)
+    mocked.reset_mock()
+    res = await client.post('/test/me?q=1', headers={
+        'knocker-host': 'test.com',
+        'x-knocker': '0.0.0',
+    })
+    assert res.status_code == 406
+    assert not mocked.called

@@ -15,6 +15,7 @@ The features:
 - Working as a web-service
 - Usable Interface to make HTTP calls
 - Configurable (timeouts, retry-policies)
+- [Sentry](https://sentry.io) Integration
 
 Public version is available here: https://knock.horneds.com
 
@@ -155,6 +156,10 @@ Knocker Service setups with the ENVIRONMENT variables:
 - **LOG_LEVEL**: `INFO`
 
 - **LOG_FORMAT**: `%(asctime)s %(levelname)-8s %(message)s`
+
+- **SENTRY_DSN**: Set to Sentry DSN to capture any exceptions (`''`)
+
+- **SENTRY_FAILED_REQUESTS**: Capture any failed requests into Sentry (`false`)
 
 
 ## Bug tracker

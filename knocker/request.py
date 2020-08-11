@@ -2,6 +2,7 @@ import asyncio as aio
 import http
 
 from httpx import HTTPError
+import sentry_sdk
 
 from . import config as global_config, logger, __version__
 
@@ -41,12 +42,18 @@ async def process(client, config, method, url, **kwargs):
             logger.warning(
                 'Request #%s failed (%d): "%s %s" %d', config['id'], attempts, method, url, error)
 
+            if global_config.SENTRY_DSN and global_config.SENTRY_FAILED_REQUESTS:
+                sentry_sdk.capture_exception(exc)
+
         # An unhandled exception
         except Exception as exc:
             logger.error(
                 'Request #%s raises an exception (%d): "%s %s"',
                 config['id'], attempts, method, url)
             logger.exception(exc)
+
+            if global_config.SENTRY_DSN:
+                sentry_sdk.capture_exception(exc)
 
         break
 

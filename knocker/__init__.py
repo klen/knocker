@@ -5,6 +5,7 @@ from modconfig import Config
 
 __version__ = "0.13.0"
 
+# Configuration
 config = Config(
 
     SCHEME='https',
@@ -14,6 +15,9 @@ config = Config(
 
     TIMEOUT=10.0,
     TIMEOUT_MAX=60.0,
+
+    SENTRY_DSN='',
+    SENTRY_FAILED_REQUESTS=False,
 
     RETRIES=2,
     RETRIES_MAX=10,
@@ -26,6 +30,7 @@ config = Config(
 
 )
 
+# Setup logging
 logger = logging.getLogger('knocker')
 logger.setLevel(config.LOG_LEVEL)
 logger.propagate = False
@@ -42,3 +47,14 @@ from .app import App  # noqa
 
 
 app = App()
+
+# Setup Sentry
+if config.SENTRY_DSN:
+
+    import sentry_sdk
+    from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+
+    logger.info('Setup Sentry: %s', config.SENTRY_DSN)
+    sentry_sdk.init(dsn=config.SENTRY_DSN, release=__version__)
+
+    app = SentryAsgiMiddleware(app)

@@ -26,7 +26,7 @@ config = Config(
 
     LOG_FILE='-',
     LOG_LEVEL='INFO',
-    LOG_FORMAT='[%(asctime)s] %(process)s %(levelname)-8s %(message)s',
+    LOG_FORMAT='[%(asctime)s] [%(process)s] [%(levelname)s] %(message)s',
 
 )
 
@@ -39,7 +39,7 @@ if config.LOG_FILE:
     if config.LOG_FILE != '-':
         handler = logging.FileHandler(config.LOG_FILE)
 
-    handler.setFormatter(logging.Formatter(config.LOG_FORMAT))
+    handler.setFormatter(logging.Formatter(config.LOG_FORMAT, datefmt="%Y-%m-%d %H:%M:%S %z"))
     logger.addHandler(handler)
 
 

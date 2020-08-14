@@ -187,3 +187,22 @@ async def test_knocker(mocked, client, event_loop):
     })
     assert res.status_code == 406
     assert not mocked.called
+
+
+@mock.patch('knocker.request.request')
+@mock.patch('knocker.request.sentry_sdk')
+async def test_sentry(msentry, mrequest, client, event_loop):
+    from knocker import config
+
+    config.SENTRY_DSN = 'test'
+    config.SENTRY_FAILED_REQUESTS = True
+    mrequest.return_value = Response(400, request=Request('GET', 'https://test.com'))
+    res = await client.post('/test/me?q=1', headers={
+        'knocker-host': 'test.com',
+        'knocker-retries': '1',
+        'knocker-backoff-factor': '.1',
+    })
+    assert res.status_code == 200
+
+    await wait_for_other()
+    assert msentry.capture_exception.called

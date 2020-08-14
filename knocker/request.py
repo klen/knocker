@@ -1,6 +1,7 @@
 import asyncio as aio
 import http
 
+from httpcore import TimeoutException, NetworkError
 from httpx import HTTPError
 import sentry_sdk
 
@@ -25,8 +26,8 @@ async def process(client, config, method, url, **kwargs):
                 config['id'], attempts, method, url, res.status_code,
                 http.HTTPStatus(res.status_code).phrase)
 
-        except HTTPError as exc:
-            error = exc.response and exc.response.status_code or 999
+        except (HTTPError, NetworkError, TimeoutException) as exc:
+            error = exc_to_code(exc)
 
             if config['retries'] > (attempts - 1):
                 retry = min(global_config.RETRIES_BACKOFF_FACTOR_MAX, (
@@ -57,13 +58,13 @@ async def process(client, config, method, url, **kwargs):
 
         break
 
-    if error and config.get('callback'):
+    if config.get('callback'):
         aio.create_task(process(
             client, config, 'POST', config.pop('callback'), json={
                 'config': config,
                 'method': method,
                 'url': url,
-                'status_code': error,
+                'status_code': error or 999,
             }, headers=kwargs.get('headers')
         ))
 
@@ -75,3 +76,14 @@ async def request(client, method, url, **kwargs):
     #  async with client.stream(method, url, **kwargs) as response:
     #      return response
     return await client.request(method, url, **kwargs)
+
+
+def exc_to_code(exc):
+    """Convert an exception into a response code."""
+    if isinstance(exc, NetworkError):
+        return 503
+
+    if isinstance(exc, TimeoutException):
+        return 504
+
+    return exc.response and exc.response.status_code or 418

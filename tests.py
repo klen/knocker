@@ -82,7 +82,7 @@ def test_process_scope():
 
 
 @mock.patch('knocker.request.request')
-async def test_knocker(mocked, client, event_loop):
+async def test_request(mocked, client, event_loop):
     """Test making requests."""
 
     # Status
@@ -150,21 +150,38 @@ async def test_knocker(mocked, client, event_loop):
     await wait_for_other()
     assert mocked.call_count == 2
 
-    # Test callback
-    mocked.reset_mock()
+
+@mock.patch('knocker.request.request')
+async def test_callbacks(mocked, client, event_loop):
+    mocked.return_value = Response(200, request=Request('GET', 'https://test.com'))
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'test.com',
-        'knocker-retries': '1',
-        'knocker-backoff-factor': '.1',
         'knocker-scheme': 'http',
         'knocker-callback': 'https://callback.my',
+    })
+    assert res.status_code == 200
+    json = res.json()
+    assert json
+
+    await wait_for_other()
+    assert mocked.call_count == 1
+    (_, method, url), kwargs = mocked.call_args
+    assert url == 'http://test.com/test/me?q=1'
+
+    mocked.reset_mock()
+    mocked.side_effect = HTTPError(response=res)
+    res = await client.post('/test/me?q=1', headers={
+        'knocker-host': 'test.com',
+        'knocker-scheme': 'http',
+        'knocker-callback': 'https://callback.my',
+        'knocker-retries': '1',
+        'knocker-backoff-factor': '.1',
         'knocker-custom': 'custom-knocker-header',
         'custom-header': 'custom-value',
     })
     assert res.status_code == 200
     json = res.json()
     assert json
-    assert json['config']['id'] != 'custom-id'
 
     rid = json['config']['id']
 

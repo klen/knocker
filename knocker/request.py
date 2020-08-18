@@ -26,6 +26,8 @@ async def process(client, config, method, url, **kwargs):
                 config['id'], attempts, method, url, res.status_code,
                 http.HTTPStatus(res.status_code).phrase)
 
+            return
+
         except (HTTPError, NetworkError, TimeoutException) as exc:
             error = exc_to_code(exc)
 

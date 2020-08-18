@@ -33,4 +33,4 @@ jobs:
 
     - name: Test with pytest
       run: |
-        make test
+        env/bin/pytest tests.py

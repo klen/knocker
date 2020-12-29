@@ -3,7 +3,7 @@ import logging
 from modconfig import Config
 
 
-__version__ = "0.14.3"
+__version__ = "0.15.0"
 
 # Configuration
 config = Config(

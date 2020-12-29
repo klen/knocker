@@ -4,7 +4,7 @@ import os
 import pytest
 import unittest.mock as mock
 
-from httpx import AsyncClient, HTTPError, Response, Request
+from httpx import AsyncClient, HTTPStatusError, Response, Request
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -134,7 +134,7 @@ async def test_request(mocked, client, event_loop):
     assert kwargs['headers']['x-knocker']
 
     mocked.reset_mock()
-    mocked.side_effect = HTTPError(response=res)
+    mocked.side_effect = HTTPStatusError('we have a problem', request=None, response=res)
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'test.com',
         'knocker-retries': '1',
@@ -169,7 +169,7 @@ async def test_callbacks(mocked, client, event_loop):
     assert url == 'http://test.com/test/me?q=1'
 
     mocked.reset_mock()
-    mocked.side_effect = HTTPError(response=res)
+    mocked.side_effect = HTTPStatusError('', request=None, response=res)
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'test.com',
         'knocker-scheme': 'http',

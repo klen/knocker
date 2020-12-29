@@ -1,8 +1,10 @@
+"""Do requests."""
+
 import asyncio as aio
 import http
+from random import random
 
-from httpcore import TimeoutException, NetworkError
-from httpx import HTTPError
+from httpx import HTTPError, ConnectError, TimeoutException, NetworkError
 import sentry_sdk
 
 from . import config as global_config, logger, __version__
@@ -28,12 +30,12 @@ async def process(client, config, method, url, **kwargs):
 
             return
 
-        except (HTTPError, NetworkError, TimeoutException) as exc:
+        except HTTPError as exc:
             error = exc_to_code(exc)
 
             if config['retries'] > (attempts - 1):
                 retry = min(global_config.RETRIES_BACKOFF_FACTOR_MAX, (
-                    config['backoff_factor'] * (2 ** (attempts - 1))
+                    config['backoff_factor'] * (2 ** (attempts - 1)) + random()
                 ))
                 logger.warning(
                     'Request #%s fail (%d), retry in %ss: "%s %s" %d',
@@ -73,15 +75,16 @@ async def process(client, config, method, url, **kwargs):
 
 async def request(client, method, url, **kwargs):
     """Make a request."""
-
-    # We don't need to read response body here, but httpx>0.13 warns unclosed stream
-    #  async with client.stream(method, url, **kwargs) as response:
-    #      return response
-    return await client.request(method, url, **kwargs)
+    # We don't need to read response body here
+    async with client.stream(method, url, **kwargs) as response:
+        return response
 
 
 def exc_to_code(exc):
     """Convert an exception into a response code."""
+    if isinstance(exc, ConnectError):
+        return 502
+
     if isinstance(exc, NetworkError):
         return 503
 

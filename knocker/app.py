@@ -1,3 +1,5 @@
+"""Create ASGI Knocker application."""
+
 import asyncio as aio
 import os
 import json
@@ -13,9 +15,12 @@ from .utils import process_scope, read_body
 
 class App:
 
+    """Run Knocker."""
+
     def __init__(self):
         """Initialize the application."""
         self.client = None
+        self.processed = 0
         self.ident = os.getpid()
 
     async def startup(self, scope):
@@ -58,9 +63,10 @@ class App:
 
     async def run(self, scope, receive, send):
         """Process HTTP request."""
-
         if scope['path'] == config.STATUS_URL:
-            return 200, dict(tasks=len(aio.all_tasks()), version=__version__, worker=self.ident)
+            return 200, dict(
+                processed=self.processed, tasks=len(aio.all_tasks()),
+                version=__version__, worker=self.ident)
 
         try:
             method, url, headers, cfg = process_scope(scope)
@@ -72,5 +78,7 @@ class App:
 
         aio.create_task(process(
             self.client, cfg, method, url, headers=headers, data=await read_body(receive)))
+
+        self.processed += 1
 
         return 200, {'config': cfg}

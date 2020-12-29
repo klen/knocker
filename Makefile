@@ -7,7 +7,7 @@ VERSION 	?= $(shell cat $(CURDIR)/.version)
 all: $(VIRTUAL_ENV)
 
 $(VIRTUAL_ENV): $(CURDIR)/requirements.txt
-	@[ -d $(VIRTUAL_ENV) ] || virtualenv --python=python3 $(VIRTUAL_ENV)
+	@[ -d $(VIRTUAL_ENV) ] || python -m venv $(VIRTUAL_ENV)
 	@$(VIRTUAL_ENV)/bin/pip install -r requirements.txt
 	@touch $(VIRTUAL_ENV)
 
@@ -39,7 +39,7 @@ major:
 
 
 dev: $(VIRTUAL_ENV)
-	$(VIRTUAL_ENV)/bin/uvicorn --port 5000 --reload $(NAME):app
+	$(VIRTUAL_ENV)/bin/uvicorn --reload $(NAME):app
 
 test t: $(VIRTUAL_ENV)
 	$(VIRTUAL_ENV)/bin/pytest tests.py
@@ -52,8 +52,11 @@ docker:
 	docker build -f $(CURDIR)/devops/Dockerfile -t $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(CURDIR)
 	docker tag $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
+docker-shell: docker
+	docker run -it --rm --name $(NAME) $(DOCKERHUB_USERNAME)/$(NAME):latest bash
+
 docker-run run: docker
-	docker run -it --rm -p 5000:8000 --name $(NAME) $(DOCKERHUB_USERNAME)/$(NAME):latest
+	docker run -it --rm -p 80:8000 --name $(NAME) $(DOCKERHUB_USERNAME)/$(NAME):latest
 
 docker-upload: docker
 	docker push $(DOCKERHUB_USERNAME)/$(NAME):$(VERSION)

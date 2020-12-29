@@ -1,3 +1,5 @@
+"""Parse knocker request settings."""
+
 import uuid
 import re
 
@@ -6,10 +8,11 @@ import marshmallow as ma
 from . import config
 
 
-SCHEMA = re.compile('^https?://')
+SCHEMA_RE = re.compile('^https?://')
 
 
 class RequestConfigSchema(ma.Schema):
+    """Serialize/deserialize knocker requests."""
 
     host = ma.fields.String(required=True, data_key='knocker-host')
     scheme = ma.fields.String(missing=config.SCHEME, validate=ma.validate.OneOf([
@@ -36,9 +39,20 @@ class RequestConfigSchema(ma.Schema):
         data_key='knocker-backoff-factor'
     )
 
+    #  limit = ma.fields.Int(
+    #      validate=ma.validate.Range(0, 1e5),
+    #      data_key='knocker-limit'
+    #  )
+
+    #  limit_period = ma.fields.Int(
+    #      validate=ma.validate.Range(0, 86400),
+    #      data_key='knocker-limit-period'
+    #  )
+
     @ma.post_load
     def fix_host(self, data, **kwargs):
-        data['host'] = SCHEMA.sub('', data['host'])
+        """Clean a host and ensure that it is allowed."""
+        data['host'] = SCHEMA_RE.sub('', data['host'])
         if config.HOSTS_ONLY and data['host'] not in config.HOSTS_ONLY:
             raise ma.ValidationError('Host is not allowed', field_name='knocker-host')
 

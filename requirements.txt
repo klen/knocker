@@ -3,7 +3,7 @@ httpx               == 0.16.1
 marshmallow         == 3.10.0
 modconfig           == 0.3.3
 sentry_sdk          == 0.19.5
-uvicorn             == 0.13.2
+uvicorn             == 0.13.3
 
 uvloop              == 0.14.0
 httptools           == 0.1.1

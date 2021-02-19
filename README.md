@@ -86,15 +86,13 @@ body. It will retry the request 5 times after fails (response status 4**, 5**)
 
 Requests parameters are passed through HTTP headers:
 
-=========================== =====================================
-**KNOCKER-HOST**            HTTP Host to make a call (required)
-**KNOCKER-SCHEME**          HTTP Scheme to make a call (optional)
-**KNOCKER-TIMEOUT**         Timeout in seconds (float, optional)
-**KNOCKER-RETRIES**         Number of attempts to make HTTP call if previous one was failed (optional)
-**KNOCKER-BACKOFF-FACTOR**  A backoff factor in seconds to apply between attempts after the second try
-**KNOCKER-CALLBACK**        An URL to make a callback call if all attemps are failed (optional)
-**KNOCKER-ID**              Custom ID for the request (optional, by default Knocker creates one by itself)
-=========================== =====================================
+| **KNOCKER-HOST**            | HTTP Host to make a call (required)
+| **KNOCKER-SCHEME**          | HTTP Scheme to make a call (optional)
+| **KNOCKER-TIMEOUT**         | Timeout in seconds (float, optional)
+| **KNOCKER-RETRIES**         | Number of attempts to make HTTP call if previous one was failed (optional)
+| **KNOCKER-BACKOFF-FACTOR**  | A backoff factor in seconds to apply between attempts after the second try
+| **KNOCKER-CALLBACK**        | An URL to make a callback call if all attemps are failed (optional)
+| **KNOCKER-ID**              | Custom ID for the request (optional, by default Knocker creates one by itself)
 
 All other headers which begin from `knocker-` prefix won't be sent to a target
 host but will be sent to a callback.

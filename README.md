@@ -86,6 +86,8 @@ body. It will retry the request 5 times after fails (response status 4**, 5**)
 
 Requests parameters are passed through HTTP headers:
 
+| Header                      | Description
+| ---                         | ---
 | **KNOCKER-HOST**            | HTTP Host to make a call (required)
 | **KNOCKER-SCHEME**          | HTTP Scheme to make a call (optional)
 | **KNOCKER-TIMEOUT**         | Timeout in seconds (float, optional)

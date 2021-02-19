@@ -1,6 +1,6 @@
 # Knocker 0.15.1
 
-The Knocker Service is a simple ready-to-deploy service to make HTTP calls.
+The Knocker Service is a simple ready-to-deploy service to retry HTTP calls.
 
 [![tests](https://github.com/klen/knocker/workflows/tests/badge.svg)](https://github.com/klen/knocker/actions)
 [![dockerhub](https://images.microbadger.com/badges/image/horneds/knocker.svg)](https://hub.docker.com/r/horneds/knocker)

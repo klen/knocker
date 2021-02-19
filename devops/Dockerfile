@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 # Labels
 LABEL maintainer="horneds@gmail.com"
@@ -13,11 +13,10 @@ CMD ["knocker"]
 
 # Dependencies
 RUN apt-get update && apt-get install -y \
-    curl \
+    curl gcc \
     && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache -r /app/requirements.txt
 
 # Copy the application
 COPY . /app
+
+RUN pip install -e /app[run,sentry]

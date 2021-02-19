@@ -6,9 +6,9 @@ VERSION 	?= $(shell cat $(CURDIR)/.version)
 
 all: $(VIRTUAL_ENV)
 
-$(VIRTUAL_ENV): $(CURDIR)/requirements.txt
+$(VIRTUAL_ENV): setup.cfg
 	@[ -d $(VIRTUAL_ENV) ] || python -m venv $(VIRTUAL_ENV)
-	@$(VIRTUAL_ENV)/bin/pip install -r requirements.txt
+	@$(VIRTUAL_ENV)/bin/pip install -e .[tests,run,build,sentry]
 	@touch $(VIRTUAL_ENV)
 
 
@@ -39,10 +39,13 @@ major:
 
 
 dev: $(VIRTUAL_ENV)
-	$(VIRTUAL_ENV)/bin/uvicorn --reload $(NAME):app
+	$(VIRTUAL_ENV)/bin/uvicorn --reload $(NAME).app:app
 
 test t: $(VIRTUAL_ENV)
 	$(VIRTUAL_ENV)/bin/pytest tests.py
+
+mypy: $(VIRTUAL_ENV)
+	$(VIRTUAL_ENV)/bin/mypy knocker
 
 # Docker
 # ------

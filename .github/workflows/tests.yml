@@ -14,21 +14,21 @@ jobs:
     - name: Checkout changes
       uses: actions/checkout@v2
 
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
 
     - name: Use cache
       id: cache-env
       uses: actions/cache@v2
       with:
         path: env
-        key: ${{ runner.os }}-env-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-env-${{ hashFiles('setup.cfg') }}
 
     - name: Setup requirements
       run: |
-        python -m venv env && env/bin/pip install -r requirements.txt
+        python -m venv env && env/bin/pip install -e .[tests]
       if: steps.cache-env.outputs.cache-hit != 'true'
 
     - name: Test with pytest

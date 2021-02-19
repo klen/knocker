@@ -1,27 +1,31 @@
 """Do requests."""
 
-import asyncio as aio
+import asyncio
+import typing as t
 import http
+from asgi_tools._compat import aio_sleep
 from random import random
 
-from httpx import HTTPError, ConnectError, TimeoutException, NetworkError
+from httpx import (
+    HTTPError, ConnectError, TimeoutException, NetworkError,
+    AsyncClient, Response, HTTPStatusError)
 import sentry_sdk
 
 from . import config as global_config, logger, __version__
 
 
-async def process(client, config, method, url, **kwargs):
+async def process(client: AsyncClient, config: dict, method: str, url: str, **kwargs):
     """Send requests."""
     attempts = 0
     error = None
     kwargs['timeout'] = config['timeout']
     kwargs['headers'] = kwargs.get('headers') or {}
-    kwargs['headers']['x-knocker'] = __version__
+    kwargs['headers'].append(('x-knocker', __version__))
 
     while True:
         try:
             attempts += 1
-            res = await request(client, method, url, **kwargs)
+            res: Response = await request(client, method, url, **kwargs)
             res.raise_for_status()
             logger.info(
                 'Request #%s done (%d): "%s %s" %d %s',
@@ -41,7 +45,7 @@ async def process(client, config, method, url, **kwargs):
                     'Request #%s fail (%d), retry in %ss: "%s %s" %d',
                     config['id'], attempts, retry, method, url, error)
 
-                await aio.sleep(retry)
+                await aio_sleep(retry)
                 continue
 
             logger.warning(
@@ -63,7 +67,8 @@ async def process(client, config, method, url, **kwargs):
         break
 
     if config.get('callback'):
-        aio.create_task(process(
+        # TODO: Remove dependency from asyncio (spawn nursery in worker)
+        asyncio.create_task(process(
             client, config, 'POST', config.pop('callback'), json={
                 'config': config,
                 'method': method,
@@ -73,15 +78,18 @@ async def process(client, config, method, url, **kwargs):
         ))
 
 
-async def request(client, method, url, **kwargs):
+async def request(client: AsyncClient, method: str, url: str, **kwargs) -> Response:
     """Make a request."""
     # We don't need to read response body here
     async with client.stream(method, url, **kwargs) as response:
         return response
 
 
-def exc_to_code(exc):
+def exc_to_code(exc: HTTPError) -> int:
     """Convert an exception into a response code."""
+    if isinstance(exc, HTTPStatusError):
+        return exc.response and exc.response.status_code or 418
+
     if isinstance(exc, ConnectError):
         return 502
 
@@ -91,4 +99,4 @@ def exc_to_code(exc):
     if isinstance(exc, TimeoutException):
         return 504
 
-    return exc.response and exc.response.status_code or 418
+    return 418

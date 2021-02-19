@@ -11,6 +11,7 @@ from . import config
 SCHEMA_RE = re.compile('^https?://')
 
 
+# TODO: Check callbacks
 class RequestConfigSchema(ma.Schema):
     """Serialize/deserialize knocker requests."""
 

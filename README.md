@@ -127,23 +127,23 @@ Content-Type: application/json
 
 Knocker Service setups with the ENVIRONMENT variables:
 
-=============================== =====================================
-**SCHEME**                      Default scheme to make HTTP calls (`https`)
-**MAX_REDIRECTS**               Max number of allowed redirects per a call (`10`)
-**STATUS_URL**                  A path to return Knocker Status (`/knocker/status`)
-**HOSTS_ONLY**                  A list with hosts names, if defined only the hosts would be allowed (`[]`)
-**TIMEOUT**                     Default timeout in seconds (`10.0`)
-**TIMEOUT_MAX**                 Maximum allowed timeout in seconds (`60.0`)
-**RETRIES**                     Default number of attempts to make HTTP call (`2`)
-**RETRIES_MAX**                 Maximum allowed number of retries (`10`)
-**RETRIES_BACKOFF_FACTOR**      A backoff factor in seconds to apply between attempts after the second try (`0.5`)
-**RETRIES_BACKOFF_FACTOR_MAX**  Maximum backoff time (`600`)
-**LOG_FILE**                    `-`
-**LOG_LEVEL**                   `INFO`
-**LOG_FORMAT**                  `%(asctime)s %(levelname)-8s %(message)s`
-**SENTRY_DSN**                  Set to Sentry DSN to capture any exceptions (`''`)
-**SENTRY_FAILED_REQUESTS**      Capture any failed requests into Sentry (`false`)
-=============================== =====================================
+| Variable Name                   | Description (default value)
+| ---                             | ---
+| **SCHEME**                      | Default scheme to make HTTP calls (`https`)
+| **MAX_REDIRECTS**               | Max number of allowed redirects per a call (`10`)
+| **STATUS_URL**                  | A path to return Knocker Status (`/knocker/status`)
+| **HOSTS_ONLY**                  | A list with hosts names, if defined only the hosts would be allowed (`[]`)
+| **TIMEOUT**                     | Default timeout in seconds (`10.0`)
+| **TIMEOUT_MAX**                 | Maximum allowed timeout in seconds (`60.0`)
+| **RETRIES**                     | Default number of attempts to make HTTP call (`2`)
+| **RETRIES_MAX**                 | Maximum allowed number of retries (`10`)
+| **RETRIES_BACKOFF_FACTOR**      | A backoff factor in seconds to apply between attempts after the second try (`0.5`)
+| **RETRIES_BACKOFF_FACTOR_MAX**  | Maximum backoff time (`600`)
+| **LOG_FILE**                    | `-`
+| **LOG_LEVEL**                   | `INFO`
+| **LOG_FORMAT**                  | `%(asctime)s %(levelname)-8s %(message)s`
+| **SENTRY_DSN**                  | Set to Sentry DSN to capture any exceptions (`''`)
+| **SENTRY_FAILED_REQUESTS**      | Capture any failed requests into Sentry (`false`)
 
 
 ## Bug tracker

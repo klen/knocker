@@ -5,16 +5,18 @@ The Knocker Service is a simple ready-to-deploy service to retry HTTP calls.
 [![tests](https://github.com/klen/knocker/workflows/tests/badge.svg)](https://github.com/klen/knocker/actions)
 [![dockerhub](https://images.microbadger.com/badges/image/horneds/knocker.svg)](https://hub.docker.com/r/horneds/knocker)
 
-Let's imagine that your service is doing HTTP webhook calls when something
-happens. And you need to be sure that the webhooks reach their destination. In
-that case you may setup some kind of queue to retry the failed requests or
-allow Knocker do everything for you.
+Let's imagine that your application is making HTTP webhook calls when something
+happens. And you need to be really sure that the webhooks reach their
+destinations. In this case you may add additional logic to your app, setup some
+kind of queue to retry the failed requests or let the Knocker do everything for
+you automatically.
 
 The features:
 
 - Working as a web-service
 - Usable Interface to make HTTP calls
 - Configurable (timeouts, retry-policies)
+- Callbacks for failed requests and etc
 - [Sentry](https://sentry.io) Integration
 
 Public version is available here: https://knock.horneds.com
@@ -84,20 +86,15 @@ body. It will retry the request 5 times after fails (response status 4**, 5**)
 
 Requests parameters are passed through HTTP headers:
 
-- **KNOCKER-HOST**: HTTP Host to make a call (required)
-
-- **KNOCKER-SCHEME**: HTTP Scheme to make a call (optional)
-
-- **KNOCKER-TIMEOUT**: Timeout in seconds (float, optional)
-
-- **KNOCKER-RETRIES**: Number of attempts to make HTTP call if previous one was failed (optional)
-
-- **KNOCKER-BACKOFF-FACTOR**: A backoff factor in seconds to apply between attempts after the second try
-
-- **KNOCKER-CALLBACK**: An URL to make a callback call if all attemps are failed (optional)
-
-- **KNOCKER-ID**: Custom ID for the request (optional, by default Knocker creates one by itself)
-
+=========================== =====================================
+**KNOCKER-HOST**            HTTP Host to make a call (required)
+**KNOCKER-SCHEME**          HTTP Scheme to make a call (optional)
+**KNOCKER-TIMEOUT**         Timeout in seconds (float, optional)
+**KNOCKER-RETRIES**         Number of attempts to make HTTP call if previous one was failed (optional)
+**KNOCKER-BACKOFF-FACTOR**  A backoff factor in seconds to apply between attempts after the second try
+**KNOCKER-CALLBACK**        An URL to make a callback call if all attemps are failed (optional)
+**KNOCKER-ID**              Custom ID for the request (optional, by default Knocker creates one by itself)
+=========================== =====================================
 
 All other headers which begin from `knocker-` prefix won't be sent to a target
 host but will be sent to a callback.
@@ -130,36 +127,23 @@ Content-Type: application/json
 
 Knocker Service setups with the ENVIRONMENT variables:
 
-- **SCHEME**: Default scheme to make HTTP calls (`https`)
-
-- **MAX_REDIRECTS**: Max number of allowed redirects per a call (`10`)
-
-- **STATUS_URL**: A path to return Knocker Status (`/knocker/status`)
-
-- **HOSTS_ONLY**: A list with hosts names, if defined only the hosts would be allowed (`[]`)
-
-- **TIMEOUT**: Default timeout in seconds (`10.0`)
-
-- **TIMEOUT_MAX**: Maximum allowed timeout in seconds (`60.0`)
-
-- **RETRIES**: Default number of attempts to make HTTP call (`2`)
-
-- **RETRIES_MAX**: Maximum allowed number of retries (`10`)
-
-- **RETRIES_BACKOFF_FACTOR**: A backoff factor in seconds to apply between
-  attempts after the second try (`0.5`)
-
-- **RETRIES_BACKOFF_FACTOR_MAX**: Maximum backoff time (`600`)
-
-- **LOG_FILE**: `-`
-
-- **LOG_LEVEL**: `INFO`
-
-- **LOG_FORMAT**: `%(asctime)s %(levelname)-8s %(message)s`
-
-- **SENTRY_DSN**: Set to Sentry DSN to capture any exceptions (`''`)
-
-- **SENTRY_FAILED_REQUESTS**: Capture any failed requests into Sentry (`false`)
+=============================== =====================================
+**SCHEME**                      Default scheme to make HTTP calls (`https`)
+**MAX_REDIRECTS**               Max number of allowed redirects per a call (`10`)
+**STATUS_URL**                  A path to return Knocker Status (`/knocker/status`)
+**HOSTS_ONLY**                  A list with hosts names, if defined only the hosts would be allowed (`[]`)
+**TIMEOUT**                     Default timeout in seconds (`10.0`)
+**TIMEOUT_MAX**                 Maximum allowed timeout in seconds (`60.0`)
+**RETRIES**                     Default number of attempts to make HTTP call (`2`)
+**RETRIES_MAX**                 Maximum allowed number of retries (`10`)
+**RETRIES_BACKOFF_FACTOR**      A backoff factor in seconds to apply between attempts after the second try (`0.5`)
+**RETRIES_BACKOFF_FACTOR_MAX**  Maximum backoff time (`600`)
+**LOG_FILE**                    `-`
+**LOG_LEVEL**                   `INFO`
+**LOG_FORMAT**                  `%(asctime)s %(levelname)-8s %(message)s`
+**SENTRY_DSN**                  Set to Sentry DSN to capture any exceptions (`''`)
+**SENTRY_FAILED_REQUESTS**      Capture any failed requests into Sentry (`false`)
+=============================== =====================================
 
 
 ## Bug tracker

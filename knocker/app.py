@@ -7,7 +7,7 @@ from . import logger, config, __version__
 from .core import knocker
 
 
-app: App = App(logger=logger)
+app: App = App(logger=logger, debug=config.DEBUG)
 
 app.on_startup(knocker.start)
 app.on_shutdown(knocker.stop)

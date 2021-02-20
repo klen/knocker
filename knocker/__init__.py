@@ -10,6 +10,8 @@ __version__ = "0.16.0"
 # Configuration
 config: Config = Config(
 
+    DEBUG=False,
+
     SCHEME='https',
     MAX_REDIRECTS=10,
     STATUS_URL='/knocker/status',

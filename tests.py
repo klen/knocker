@@ -14,6 +14,7 @@ pytestmark = pytest.mark.asyncio
 @pytest.fixture
 async def client():
     os.environ['TIMEOUT'] = '15.0'
+    os.environ['DEBUG'] = 'true'
     os.environ['HOSTS_ONLY'] = '["test.com","test2.com"]'
 
     from knocker.app import app
@@ -109,7 +110,7 @@ async def test_request(mocked, client, wait_for_other):
     assert mocked.call_count == 1
     (_, method, url), kwargs = mocked.call_args
     assert method == 'POST'
-    assert url == 'http://test.com:80/test/me?q=1'
+    assert url == 'http://test.com/test/me?q=1'
     assert kwargs['headers']
     headers = dict(kwargs['headers'])
     assert headers['x-knocker']
@@ -147,7 +148,7 @@ async def test_callbacks(mocked, client, wait_for_other):
     await wait_for_other()
     assert mocked.call_count == 1
     (_, method, url), kwargs = mocked.call_args
-    assert url == 'http://test.com:80/test/me?q=1'
+    assert url == 'http://test.com/test/me?q=1'
 
     mocked.reset_mock()
     mocked.side_effect = HTTPStatusError('', request=None, response=res)

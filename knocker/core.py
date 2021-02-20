@@ -5,6 +5,7 @@ import asyncio as aio
 import os
 import dataclasses as dc
 from asgi_tools import Request
+from yarl import URL
 
 from httpx import AsyncClient
 from marshmallow import ValidationError
@@ -67,14 +68,15 @@ class Knocker:
         except ValidationError as exc:
             return 400, {'status': False, 'errors': {'headers': exc.messages}}
 
-        url = request.url.with_host(config.pop('host')).with_scheme(config.pop('scheme'))
-
+        scheme = config.pop('scheme')
+        url = str(request.url.with_host(config.pop('host')).with_scheme(scheme).with_port(None))
         body = await request.body()
         aio.create_task(
-            process(self.client, config, request.method, str(url), headers=headers, data=body))
+            process(self.client, config, request.method, url, headers=headers, data=body))
 
         self.processed += 1
-        return {'status': True, 'config': config}
+        return {'status': True, 'config': config, 'url': url,
+                'method': request.method, 'headers': headers, 'body-length': len(body)}
 
 
 knocker: Knocker = Knocker()

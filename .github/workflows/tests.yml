@@ -28,9 +28,9 @@ jobs:
 
     - name: Setup requirements
       run: |
-        python -m venv env && env/bin/pip install -e .[tests]
+        python -m venv env
+        env/bin/pip install -e .[tests]
       if: steps.cache-env.outputs.cache-hit != 'true'
 
     - name: Test with pytest
-      run: |
-        env/bin/pytest tests.py
+      run: env/bin/pytest tests.py

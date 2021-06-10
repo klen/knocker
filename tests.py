@@ -180,8 +180,10 @@ async def test_callbacks(mocked, client, wait_for_other):
     assert json['config']['id'] == rid
     assert 'knocker-custom' in json['config']
 
+    from knocker import __version__
+
     assert kwargs['headers'] == [
-        ('x-knocker', '0.17.0'), ('custom-header', 'custom-value'),
+        ('x-knocker', __version__), ('custom-header', 'custom-value'),
         ('remote-addr', '127.0.0.1'), ('user-agent', 'ASGI-Tools-Test-Client')
     ]
 

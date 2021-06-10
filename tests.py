@@ -7,8 +7,11 @@ from asgi_tools.tests import ASGITestClient
 
 from httpx import HTTPStatusError, Response, Request
 
-# All test coroutines will be treated as marked.
-pytestmark = pytest.mark.asyncio
+
+@pytest.fixture(scope='session')
+def aiolib():
+    """Support asyncio only. Disable uvloop on tests."""
+    return ('asyncio', {'use_uvloop': False})
 
 
 @pytest.fixture
@@ -37,7 +40,7 @@ async def wait_for_other(client):
     return wait_for_other
 
 
-def test_config(client):
+async def test_config(client):
     from knocker import config
 
     assert config.TIMEOUT == 15.0
@@ -176,8 +179,11 @@ async def test_callbacks(mocked, client, wait_for_other):
     assert json['config']
     assert json['config']['id'] == rid
     assert 'knocker-custom' in json['config']
-    headers = dict(kwargs['headers'])
-    assert headers.get('custom-header') == 'custom-value'
+
+    assert kwargs['headers'] == [
+        ('x-knocker', '0.17.0'), ('custom-header', 'custom-value'),
+        ('remote-addr', '127.0.0.1'), ('user-agent', 'ASGI-Tools-Test-Client')
+    ]
 
     # Ignore requests from Knocker itself (see for X-Knocker header)
     mocked.reset_mock()

@@ -1,17 +1,16 @@
 """Do requests."""
 
 import asyncio
-import typing as t
 import http
-from asgi_tools._compat import aio_sleep
 from random import random
 
+import sentry_sdk
+from asgi_tools._compat import aio_sleep
 from httpx import (
     HTTPError, ConnectError, TimeoutException, NetworkError,
     AsyncClient, Response, HTTPStatusError)
-import sentry_sdk
 
-from . import config as global_config, logger, __version__
+from . import config as global_config, logger
 
 
 async def process(client: AsyncClient, config: dict, method: str, url: str, **kwargs):
@@ -19,8 +18,6 @@ async def process(client: AsyncClient, config: dict, method: str, url: str, **kw
     attempts = 0
     error = None
     kwargs['timeout'] = config['timeout']
-    kwargs['headers'] = kwargs.get('headers') or {}
-    kwargs['headers'].append(('x-knocker', __version__))
 
     while True:
         try:
@@ -74,7 +71,7 @@ async def process(client: AsyncClient, config: dict, method: str, url: str, **kw
                 'method': method,
                 'url': url,
                 'status_code': error or 999,
-            }, headers=kwargs.get('headers')
+            }, headers=kwargs['headers']
         ))
 
 

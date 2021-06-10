@@ -50,7 +50,7 @@ class Knocker:
         if request.headers.get('x-knocker'):
             return 406, {'status': False, 'errors': {'system': 'ignore requests from knocker'}}
 
-        config, headers = {}, []
+        config, headers = {}, [('x-knocker', __version__)]
         for name in request.headers:
             name = name.lower()
             if name in {'host', 'content-length'}:

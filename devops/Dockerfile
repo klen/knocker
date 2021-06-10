@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y \
     curl gcc \
     && rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt /app
+RUN pip install -r requirements.txt
+
 # Copy the application
 COPY . /app
 

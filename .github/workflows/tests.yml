@@ -24,7 +24,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: env
-        key: ${{ runner.os }}-env-${{ hashFiles('setup.cfg') }}
+        key: ${{ runner.os }}-env-${{ hashFiles('setup.cfg', 'requirements.txt') }}
 
     - name: Setup requirements
       run: |

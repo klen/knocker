@@ -71,7 +71,7 @@ async def process(client: AsyncClient, config: dict, method: str, url: str, **kw
                 'method': method,
                 'url': url,
                 'status_code': error or 999,
-            }, headers=kwargs['headers']
+            }, headers=[('x-knocker-origin', 'knocker'), *kwargs['headers']]
         ))
 
 

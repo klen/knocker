@@ -137,8 +137,8 @@ async def test_request(mocked, client, wait_for_other):
 
 
 @mock.patch('knocker.request.request')
-async def test_callbacks(mocked, client, wait_for_other):
-    mocked.return_value = Response(200, request=Request('GET', 'https://test.com'))
+async def test_callbacks(req_mock, client, wait_for_other):
+    req_mock.return_value = Response(200, request=Request('GET', 'https://test.com'))
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'test.com',
         'knocker-scheme': 'http',
@@ -149,12 +149,12 @@ async def test_callbacks(mocked, client, wait_for_other):
     assert json
 
     await wait_for_other()
-    assert mocked.call_count == 1
-    (_, method, url), kwargs = mocked.call_args
+    assert req_mock.call_count == 1
+    (_, method, url), kwargs = req_mock.call_args
     assert url == 'http://test.com/test/me?q=1'
 
-    mocked.reset_mock()
-    mocked.side_effect = HTTPStatusError('', request=None, response=res)
+    req_mock.reset_mock()
+    req_mock.side_effect = HTTPStatusError('', request=None, response=res)
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'test.com',
         'knocker-scheme': 'http',
@@ -171,8 +171,8 @@ async def test_callbacks(mocked, client, wait_for_other):
     rid = json['config']['id']
 
     await wait_for_other()
-    assert mocked.call_count == 4
-    (_, method, url), kwargs = mocked.call_args
+    assert req_mock.call_count == 4
+    (_, method, url), kwargs = req_mock.call_args
     assert url == 'https://callback.my'
     json = kwargs['json']
     assert json['status_code']
@@ -183,18 +183,19 @@ async def test_callbacks(mocked, client, wait_for_other):
     from knocker import __version__
 
     assert kwargs['headers'] == [
-        ('x-knocker', __version__), ('custom-header', 'custom-value'),
-        ('remote-addr', '127.0.0.1'), ('user-agent', 'ASGI-Tools-Test-Client')
+        ('x-knocker-origin', 'knocker'), ('x-knocker', __version__),
+        ('custom-header', 'custom-value'), ('remote-addr', '127.0.0.1'),
+        ('user-agent', 'ASGI-Tools-Test-Client')
     ]
 
     # Ignore requests from Knocker itself (see for X-Knocker header)
-    mocked.reset_mock()
+    req_mock.reset_mock()
     res = await client.post('/test/me?q=1', headers={
         'knocker-host': 'test.com',
         'x-knocker': '0.0.0',
     })
     assert res.status_code == 406
-    assert not mocked.called
+    assert not req_mock.called
 
 
 @mock.patch('knocker.request.request')

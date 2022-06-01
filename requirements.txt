@@ -1,4 +1,4 @@
 asgi-tools      == 0.57.1
-httpx           == 0.18.1
+httpx           == 0.23.0
 marshmallow     == 3.12.1
 modconfig       == 1.1.1

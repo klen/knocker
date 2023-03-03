@@ -6,19 +6,24 @@ from random import random
 
 import sentry_sdk
 from asgi_tools._compat import aio_sleep
-from httpx import (
-    HTTPError, ConnectError, TimeoutException, NetworkError,
-    AsyncClient, Response, HTTPStatusError)
+from httpx import (AsyncClient, ConnectError, HTTPError, HTTPStatusError, NetworkError, Response,
+                   TimeoutException)
 
-from . import config as global_config, logger
+from knocker.types import TRequestConfig
+
+from . import config as global_config
+from . import logger
 
 
-async def process(client: AsyncClient, config: dict, method: str, url: str, **kwargs):
+async def process(
+    client: AsyncClient, config: TRequestConfig, method: str, url: str, **kwargs
+):
     """Send requests."""
-    attempts = 0
     error = None
-    kwargs['timeout'] = config['timeout']
+    attempts = 0
+    kwargs["timeout"] = config["timeout"]
 
+    # Cycle requests
     while True:
         try:
             attempts += 1
@@ -26,27 +31,45 @@ async def process(client: AsyncClient, config: dict, method: str, url: str, **kw
             res.raise_for_status()
             logger.info(
                 'Request #%s done (%d): "%s %s" %d %s',
-                config['id'], attempts, method, url, res.status_code,
-                http.HTTPStatus(res.status_code).phrase)
+                config["id"],
+                attempts,
+                method,
+                url,
+                res.status_code,
+                http.HTTPStatus(res.status_code).phrase,
+            )
 
             return
 
         except HTTPError as exc:
             error = exc_to_code(exc)
 
-            if config['retries'] > (attempts - 1):
-                retry = min(global_config.RETRIES_BACKOFF_FACTOR_MAX, (
-                    config['backoff_factor'] * (2 ** (attempts - 1)) + random()
-                ))
+            if config["retries"] > (attempts - 1):
+                retry = min(
+                    global_config.RETRIES_BACKOFF_FACTOR_MAX,
+                    (config["backoff_factor"] * (2 ** (attempts - 1)) + random()),
+                )
                 logger.warning(
                     'Request #%s fail (%d), retry in %ss: "%s %s" %d',
-                    config['id'], attempts, retry, method, url, error)
+                    config["id"],
+                    attempts,
+                    retry,
+                    method,
+                    url,
+                    error,
+                )
 
                 await aio_sleep(retry)
                 continue
 
             logger.warning(
-                'Request #%s failed (%d): "%s %s" %d', config['id'], attempts, method, url, error)
+                'Request #%s failed (%d): "%s %s" %d',
+                config["id"],
+                attempts,
+                method,
+                url,
+                error,
+            )
 
             if global_config.SENTRY_DSN and global_config.SENTRY_FAILED_REQUESTS:
                 sentry_sdk.capture_exception(exc)
@@ -55,7 +78,11 @@ async def process(client: AsyncClient, config: dict, method: str, url: str, **kw
         except Exception as exc:
             logger.error(
                 'Request #%s raises an exception (%d): "%s %s"',
-                config['id'], attempts, method, url)
+                config["id"],
+                attempts,
+                method,
+                url,
+            )
             logger.exception(exc)
 
             if global_config.SENTRY_DSN:
@@ -63,16 +90,24 @@ async def process(client: AsyncClient, config: dict, method: str, url: str, **kw
 
         break
 
-    if config.get('callback'):
+    callback_url = config.pop("callback")
+    if callback_url:
         # TODO: Remove dependency from asyncio (spawn nursery in worker)
-        asyncio.create_task(process(
-            client, config, 'POST', config.pop('callback'), json={
-                'config': config,
-                'method': method,
-                'url': url,
-                'status_code': error or 999,
-            }, headers=[('x-knocker-origin', 'knocker'), *kwargs['headers']]
-        ))
+        asyncio.create_task(
+            process(
+                client,
+                config,
+                "POST",
+                callback_url,
+                json={
+                    "url": url,
+                    "method": method,
+                    "config": config,
+                    "status_code": error or 999,
+                },
+                headers=[("x-knocker-origin", "knocker"), *kwargs["headers"]],
+            )
+        )
 
 
 async def request(client: AsyncClient, method: str, url: str, **kwargs) -> Response:

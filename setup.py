@@ -1,10 +1,19 @@
 """Setup the package."""
 
-from setuptools import setup
 from pathlib import Path
 
-reqs = Path(__file__).parent / 'requirements.txt'
+from setuptools import setup
+
+reqs = Path(__file__).parent / "requirements.txt"
+dev_reqs = Path(__file__).parent / "requirements-dev.txt"
 
 setup(
-    install_requires=[ln for ln in reqs.read_text().split('\n') if ln and not ln.startswith('#')]
+    install_requires=[
+        ln for ln in reqs.read_text().split("\n") if ln and not ln.startswith("#")
+    ],
+    extras_require={
+        "dev": ln
+        for ln in dev_reqs.read_text().split("\n")
+        if ln and not ln.startswith("#")
+    },
 )

@@ -1,14 +1,15 @@
 NAME 		?= knocker
-VIRTUAL_ENV 	?= env
+VIRTUAL_ENV 	?= .venv
 DOCKERHUB_USERNAME?= horneds
 VERSION 	?= $(shell cat $(CURDIR)/.version)
 
 
 all: $(VIRTUAL_ENV)
 
-$(VIRTUAL_ENV): setup.cfg
+$(VIRTUAL_ENV): requirements.txt requirements-dev.txt
 	@[ -d $(VIRTUAL_ENV) ] || python -m venv $(VIRTUAL_ENV)
-	@$(VIRTUAL_ENV)/bin/pip install -e .[tests,run,build,sentry]
+	@$(VIRTUAL_ENV)/bin/pip install -e .[dev]
+	@$(VIRTUAL_ENV)/bin/pre-commit install --hook-type pre-push
 	@touch $(VIRTUAL_ENV)
 
 

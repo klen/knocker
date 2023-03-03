@@ -1,5 +1,6 @@
 """Setup ASGI application."""
 
+import sentry_sdk
 from asgi_tools import App
 
 from . import __version__, config, logger
@@ -17,7 +18,6 @@ app.route("/{path:path}")(knocker.process)
 # Setup Sentry
 if config.SENTRY_DSN:
 
-    import sentry_sdk
     from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
     logger.info("Setup Sentry: %s", config.SENTRY_DSN)

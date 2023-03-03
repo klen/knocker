@@ -71,5 +71,3 @@ docker-upload: docker
 	    -e DOCKERHUB_PASSWORD=$(shell cat $(CURDIR)/.ignore/dockerhub) \
 	    -e DOCKERHUB_REPO_NAME=$(NAME) \
 	    sheogorath/readme-to-dockerhub
-
-

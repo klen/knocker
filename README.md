@@ -1,4 +1,4 @@
-# Knocker 1.3.3
+# Knocker 1.3.4
 
 The Knocker Service is a simple ready-to-deploy service to retry HTTP calls.
 

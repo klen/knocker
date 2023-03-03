@@ -4,7 +4,6 @@ import asyncio
 import http
 from random import random
 
-import sentry_sdk
 from asgi_tools._compat import aio_sleep
 from httpx import (AsyncClient, ConnectError, HTTPError, HTTPStatusError, NetworkError, Response,
                    TimeoutException)
@@ -72,6 +71,8 @@ async def process(
             )
 
             if global_config.SENTRY_DSN and global_config.SENTRY_FAILED_REQUESTS:
+                import sentry_sdk
+
                 sentry_sdk.capture_exception(exc)
 
         # An unhandled exception
@@ -86,6 +87,8 @@ async def process(
             logger.exception(exc)
 
             if global_config.SENTRY_DSN:
+                import sentry_sdk
+
                 sentry_sdk.capture_exception(exc)
 
         break

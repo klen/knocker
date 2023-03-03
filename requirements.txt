@@ -4,5 +4,6 @@ marshmallow     == 3.19.0
 modconfig       == 1.2.1
 
 gunicorn
+sentry_sdk
 uvicorn[standard]
 uvloop

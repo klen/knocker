@@ -24,7 +24,7 @@ jobs:
       - name: Lint the code
         run: |
           uv run mypy
-          uv run ruff check app
+          uv run ruff check knocker
 
       - name: Test with pytest
         run: uv run pytest tests

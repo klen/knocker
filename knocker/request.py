@@ -1,23 +1,52 @@
 """Do requests."""
 
-import asyncio
+from __future__ import annotations
+
 import http
 from random import random
+from typing import TYPE_CHECKING
 
 import sentry_sdk
 from asgi_tools._compat import aio_sleep
-from httpx import (AsyncClient, ConnectError, HTTPError, HTTPStatusError, NetworkError, Response,
-                   TimeoutException)
+from httpx import (
+    AsyncClient,
+    ConnectError,
+    HTTPError,
+    HTTPStatusError,
+    NetworkError,
+    Response,
+    TimeoutException,
+)
 
-from knocker.types import TRequestConfig
+from knocker.tasks import create_task
+
+if TYPE_CHECKING:
+    import asyncio
+
+    from knocker.types import TRequestConfig
 
 from . import config as global_config
 from . import logger
 
 
+def run_process(
+    client: AsyncClient,
+    config: TRequestConfig,
+    method: str,
+    url: str,
+    **kwargs,
+) -> asyncio.Task:
+    """Run process in the background."""
+    return create_task(process(client, config, method, url, **kwargs))
+
+
 async def process(
-    client: AsyncClient, config: TRequestConfig, method: str, url: str, **kwargs
-):
+    client: AsyncClient,
+    config: TRequestConfig,
+    method: str,
+    url: str,
+    **kwargs,
+) -> None:
     """Send requests."""
     error = None
     attempts = 0
@@ -38,8 +67,6 @@ async def process(
                 res.status_code,
                 http.HTTPStatus(res.status_code).phrase,
             )
-
-            return
 
         except HTTPError as exc:
             error = exc_to_code(exc)
@@ -75,7 +102,7 @@ async def process(
                 sentry_sdk.capture_exception(exc)
 
         # An unhandled exception
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error(
                 'Request #%s raises an exception (%d): "%s %s"',
                 config["id"],
@@ -88,25 +115,25 @@ async def process(
             if global_config.SENTRY_DSN:
                 sentry_sdk.capture_exception(exc)
 
+        else:
+            return
+
         break
 
-    callback_url = config.pop("callback")
+    callback_url = config.pop("callback", None)
     if callback_url:
-        # TODO: Remove dependency from asyncio (spawn nursery in worker)
-        asyncio.create_task(
-            process(
-                client,
-                config,
-                "POST",
-                callback_url,
-                json={
-                    "url": url,
-                    "method": method,
-                    "config": config,
-                    "status_code": error or 999,
-                },
-                headers=[("x-knocker-origin", "knocker"), *kwargs["headers"]],
-            )
+        run_process(
+            client,
+            config,
+            "POST",
+            callback_url,
+            json={
+                "url": url,
+                "method": method,
+                "config": config,
+                "status_code": error or 999,
+            },
+            headers=[("x-knocker-origin", "knocker"), *kwargs["headers"]],
         )
 
 
@@ -120,7 +147,7 @@ async def request(client: AsyncClient, method: str, url: str, **kwargs) -> Respo
 def exc_to_code(exc: HTTPError) -> int:
     """Convert an exception into a response code."""
     if isinstance(exc, HTTPStatusError):
-        return exc.response and exc.response.status_code or 418
+        return (exc.response and exc.response.status_code) or 418
 
     if isinstance(exc, ConnectError):
         return 502

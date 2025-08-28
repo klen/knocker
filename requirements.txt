@@ -1,9 +1,0 @@
-asgi-tools      >= 0.70.6
-httpx           == 0.23.3
-marshmallow     == 3.19.0
-modconfig       == 1.2.1
-
-gunicorn
-sentry_sdk
-uvicorn[standard]
-uvloop

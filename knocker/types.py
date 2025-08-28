@@ -1,3 +1,7 @@
+"""Types for knocker."""
+
+from __future__ import annotations
+
 from typing import Literal, NotRequired, TypedDict
 
 
@@ -11,9 +15,12 @@ class TStatus(TypedDict):
     worker: int
 
 
-class TRequestConfig(TypedDict, total=False):
+class TRequestConfig(TypedDict):
+    """Configuration for a request."""
+
     host: str
     scheme: Literal["http", "https"]
+
     callback: NotRequired[str | None]
     id: str
     timeout: float

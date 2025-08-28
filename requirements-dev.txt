@@ -1,8 +1,0 @@
-bump2version
-mypy
-pre-commit
-pytest
-pytest-aio
-pytest-mypy
-refurb
-sentry_sdk

@@ -7,22 +7,24 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout changes
-      uses: actions/checkout@v2
+      - name: Checkout changes
+        uses: actions/checkout@v2
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v2
-      with:
-        cache: pip
-        python-version: '3.11'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
 
-    - name: Setup requirements
-      run: pip install -e .[dev]
-      if: steps.cache-env.outputs.cache-hit != 'true'
+      - name: Setup dependencies
+        run: uv sync --locked --all-extras --dev
 
-    - name: Test with pytest
-      run: pytest tests.py
+      - name: Lint the code
+        run: |
+          uv run mypy
+          uv run ruff check app
+
+      - name: Test with pytest
+        run: uv run pytest tests

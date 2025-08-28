@@ -1,5 +1,7 @@
 """Knocker Service."""
 
+from __future__ import annotations
+
 import logging
 
 from modconfig import Config
@@ -36,6 +38,6 @@ if config.LOG_FILE:
         handler = logging.FileHandler(config.LOG_FILE)
 
     handler.setFormatter(
-        logging.Formatter(config.LOG_FORMAT, datefmt="%Y-%m-%d %H:%M:%S %z")
+        logging.Formatter(config.LOG_FORMAT, datefmt="%Y-%m-%d %H:%M:%S %z"),
     )
     logger.addHandler(handler)

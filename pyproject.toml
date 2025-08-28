@@ -1,6 +1,6 @@
 [project]
 name = "knocker"
-version = "1.4.0"
+version = "1.4.1"
 description = "Simple ready-to-deploy service to retry HTTP calls"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -77,7 +77,7 @@ non_interactive = true
 packages = ["knocker"]
 
 [tool.bumpversion]
-current_version = "1.4.0"
+current_version = "1.4.1"
 commit = false
 tag = false
 

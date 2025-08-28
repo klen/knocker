@@ -6,7 +6,7 @@ import logging
 
 from modconfig import Config
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 # Configuration
 config: Config = Config(

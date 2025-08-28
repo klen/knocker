@@ -47,16 +47,15 @@ release: $(VIRTUAL_ENV)
 
 .PHONY: minor
 minor:
-	make version RELEASE=minor
+	make release RELEASE=minor
 
 .PHONY: patch
 patch:
-	make version RELEASE=patch
+	make release RELEASE=patch
 
 .PHONY: major
 major:
-	make version RELEASE=major
-
+	make release RELEASE=major
 
 dev:
 	uv run uvicorn --reload $(NAME).app:app

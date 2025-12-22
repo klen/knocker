@@ -23,7 +23,7 @@ urls = { "Homepage" = "https://github.com/klen/knocker", "Repository" = "https:/
 dependencies = [
   "asgi-tools>=0.70.6",
   "httpx==0.23.3",
-  "marshmallow==3.19.0",
+  "marshmallow==3.26.2",
   "modconfig==1.2.1",
   "gunicorn",
   "sentry-sdk",
